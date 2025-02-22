@@ -1,0 +1,31 @@
+{
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.fixAll.eslint": "explicit"
+    },
+    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+    "editor.wordWrap": "on",
+    "window.openFilesInNewWindow": "on",
+    "editor.tabSize": 2,
+    "editor.minimap.showSlider": "always",
+    "workbench.editor.showTabs": "multiple",
+    "eslint.format.enable": true,
+    "editor.formatOnSave": true,
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact",
+        "razor": "html",
+        "plaintext": "pug"
+    },
+    "workbench.iconTheme": "material-icon-theme",
+    "liveshare.connectionMode": "relay",
+    "bracketPairColorizer.depreciation-notice": false,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "scm.inputFontSize": 15,
+    "debug.console.fontSize": 15,
+    "markdown.preview.fontSize": 15,
+    "terminal.integrated.fontSize": 15
+    // "editor.fontSize": 13
+}
