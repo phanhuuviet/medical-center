@@ -12,7 +12,6 @@ import { checkEmail } from '../utils/validate.js';
 export const signIn = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log('email', email);
 
         if (!email || !password) {
             return new ResponseBuilder()
@@ -24,7 +23,6 @@ export const signIn = async (req, res) => {
         }
 
         const checkUser = await UserModel.findOne({ email });
-        console.log('checkUser', checkUser);
 
         // Check exist email in DB
         if (isNil(checkUser)) {
@@ -70,13 +68,13 @@ export const signIn = async (req, res) => {
 
 export const signUp = async (req, res) => {
     try {
-        const { userName, email, password } = req.body;
+        const { userName, email, password, dateOfBirth, gender, province, district, address } = req.body;
 
         // Check required fields
-        if (!userName || !email || !password) {
+        if (!userName || !email || !password || !dateOfBirth || !gender || !province || !district) {
             return new ResponseBuilder()
                 .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage('Username, email and password are required')
+                .withMessage('Missing required fields')
                 .build(res);
         } else if (!checkEmail(email)) {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);
@@ -96,6 +94,11 @@ export const signUp = async (req, res) => {
             userName,
             email,
             password: hashPassword,
+            dateOfBirth,
+            gender,
+            province,
+            district,
+            address,
         });
 
         return new ResponseBuilder()
