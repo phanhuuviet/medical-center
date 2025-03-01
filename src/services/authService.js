@@ -9,6 +9,7 @@ import { generateAccessToken, generateRefreshToken } from '../utils/generate-jwt
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail } from '../utils/validate.js';
 
+// [POST] ${PREFIX_API}/auth/sign-in
 export const signIn = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -54,6 +55,7 @@ export const signIn = async (req, res) => {
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Sign in success')
             .withData({
+                id: checkUser._id,
                 access_token,
                 refresh_token,
             })
@@ -66,6 +68,7 @@ export const signIn = async (req, res) => {
     }
 };
 
+// [POST] ${PREFIX_API}/auth/sign-up
 export const signUp = async (req, res) => {
     try {
         const { userName, email, password, dateOfBirth, gender, province, district, address } = req.body;

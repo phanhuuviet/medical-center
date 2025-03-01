@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
+import { isNil } from 'lodash-es';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
@@ -32,7 +33,15 @@ export const uploadImageMiddleware = async (req, res, next) => {
     try {
         const singleUpload = upload.single('file');
         singleUpload(req, res, (err) => {
+            if (isNil(req.file)) {
+                return new ResponseBuilder()
+                    .withCode(ResponseCode.BAD_REQUEST)
+                    .withMessage('Please upload an image')
+                    .build(res);
+            }
+
             if (err) {
+                console.log('Error', err);
                 return new ResponseBuilder()
                     .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
                     .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
