@@ -1,10 +1,12 @@
 import bcrypt from 'bcryptjs';
-import { isNil } from 'lodash-es';
+import { isEmpty, isNil } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
 import { SALT_ROUNDS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
+import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
+import DoctorWorkingScheduleModel from '../models/DoctorWorkingScheduleModel.js';
 import UserModel, { DoctorModel } from '../models/UserModel.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail, checkFieldRequire, removeUndefinedFields } from '../utils/validate.js';
@@ -144,6 +146,19 @@ export const createDoctor = async (req, res) => {
             description,
             role: USER_ROLE.DOCTOR,
         });
+
+        // Fetch schedule of clinic and create record of DoctorWorkingSchedule table
+        const clinicSchedules = await ClinicScheduleModel.find({ clinicId });
+        if (!isEmpty(clinicSchedules)) {
+            const doctorWorkingSchedules = clinicSchedules.map((clinicSchedule) => {
+                return {
+                    doctorId: newUser._id,
+                    clinicScheduleId: clinicSchedule._id,
+                };
+            });
+
+            await DoctorWorkingScheduleModel.insertMany(doctorWorkingSchedules);
+        }
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
