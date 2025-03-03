@@ -4,6 +4,7 @@ import ErrorMessage from '../constants/error-message.js';
 import { ResponseCode } from '../constants/response-code.js';
 import UserModel from '../models/UserModel.js';
 import ResponseBuilder from '../utils/response-builder.js';
+import { removeUndefinedFields } from '../utils/validate.js';
 
 // [GET] ${PREFIX_API}/user/me
 export const getMe = async (req, res) => {
@@ -23,8 +24,9 @@ export const getMe = async (req, res) => {
     } catch (error) {
         console.log('Error', error);
         return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .build(res);
     }
 };
 
@@ -46,8 +48,9 @@ export const getUserById = async (req, res) => {
     } catch (error) {
         console.log('Error', error);
         return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .build(res);
     }
 };
 
@@ -68,7 +71,7 @@ export const updateUser = async (req, res) => {
         };
 
         // Remove undefined values
-        Object.keys(updatedData).forEach((key) => updatedData[key] === undefined && delete updatedData[key]);
+        removeUndefinedFields(updatedData);
 
         const updatedUser = await UserModel.findByIdAndUpdate(
             userId,
@@ -92,8 +95,9 @@ export const updateUser = async (req, res) => {
     } catch (error) {
         console.log('Error', error);
         return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .build(res);
     }
 };
 
@@ -127,8 +131,9 @@ export const updateAvatar = async (req, res) => {
     } catch (error) {
         console.log('Error', error);
         return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .build(res);
     }
 };
 
@@ -148,7 +153,8 @@ export const deleteUser = async (req, res) => {
     } catch (error) {
         console.log('Error', error);
         return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .build(res);
     }
 };

@@ -1,3 +1,5 @@
+export const PREFIX_API = '/api/v1';
+
 export const SALT_ROUNDS = 10;
 
 export const GENDER_ENUM = {
@@ -6,4 +8,7 @@ export const GENDER_ENUM = {
     OTHER: 3,
 };
 
-export const PREFIX_API = '/api/v1';
+export const ACTIVE_STATUS = {
+    ACTIVE: 1,
+    INACTIVE: 2,
+};
