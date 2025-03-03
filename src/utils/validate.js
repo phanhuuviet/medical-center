@@ -1,3 +1,5 @@
+import { isNil } from 'lodash-es';
+
 export const checkEmail = (email) => {
     return String(email)
         .toLowerCase()
@@ -8,4 +10,8 @@ export const checkEmail = (email) => {
 
 export const removeUndefinedFields = (obj) => {
     return Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
+};
+
+export const checkFieldRequire = (...fields) => {
+    return fields.every((field) => !isNil(field));
 };

@@ -1,10 +1,32 @@
+import bcrypt from 'bcryptjs';
 import { isNil } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
+import { SALT_ROUNDS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
-import UserModel from '../models/UserModel.js';
+import { USER_ROLE } from '../constants/role.js';
+import UserModel, { DoctorModel } from '../models/UserModel.js';
 import ResponseBuilder from '../utils/response-builder.js';
-import { removeUndefinedFields } from '../utils/validate.js';
+import { checkEmail, checkFieldRequire, removeUndefinedFields } from '../utils/validate.js';
+
+// [GET] ${PREFIX_API}/user
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await UserModel.find();
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Get all users success')
+            .withData(users)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
 
 // [GET] ${PREFIX_API}/user/me
 export const getMe = async (req, res) => {
@@ -44,6 +66,89 @@ export const getUserById = async (req, res) => {
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get user success')
             .withData(checkUser)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [POST] ${PREFIX_API}/user/create-doctor
+export const createDoctor = async (req, res) => {
+    try {
+        const {
+            userName,
+            email,
+            password,
+            dateOfBirth,
+            gender,
+            province,
+            district,
+            address,
+            clinicId,
+            medicalServiceId,
+            specialty,
+            qualification,
+            description,
+        } = req.body;
+
+        // Check required fields
+        if (
+            !checkFieldRequire(
+                userName,
+                email,
+                password,
+                dateOfBirth,
+                gender,
+                province,
+                district,
+                clinicId,
+                specialty,
+                qualification,
+            )
+        ) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Missing required fields')
+                .build(res);
+        } else if (!checkEmail(email)) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);
+        }
+
+        const checkUser = await UserModel.findOne({ email });
+        if (!isNil(checkUser)) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Email is already taken')
+                .build(res);
+        }
+
+        const hashPassword = bcrypt.hashSync(password, SALT_ROUNDS);
+
+        const newUser = await DoctorModel.create({
+            userName,
+            email,
+            password: hashPassword,
+            dateOfBirth,
+            gender,
+            province,
+            district,
+            address,
+            clinicId,
+            medicalServiceId,
+            specialty,
+            qualification,
+            description,
+            role: USER_ROLE.DOCTOR,
+        });
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Create doctor success')
+            .withData(newUser)
             .build(res);
     } catch (error) {
         console.log('Error', error);

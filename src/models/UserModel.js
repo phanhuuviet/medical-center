@@ -15,9 +15,10 @@ const UserSchema = new mongoose.Schema(
         address: { type: String },
         avatar: { type: String },
         phoneNumber: { type: String },
-        role: { type: Number, default: USER_ROLE.USER },
+        role: { type: Number, default: USER_ROLE.USER, enum: Object.values(USER_ROLE) },
     },
     {
+        discriminatorKey: 'role',
         timestamps: true,
         collection: 'User',
     },
@@ -30,4 +31,15 @@ UserSchema.methods.toJSON = function () {
 };
 
 const UserModel = mongoose.model('User', UserSchema);
+
+const DoctorSchema = new mongoose.Schema({
+    medicalServiceId: { type: mongoose.Schema.Types.ObjectId, ref: 'MedicalService' },
+    clinicId: { type: mongoose.Schema.Types.ObjectId, ref: 'Clinic' },
+    specialty: { type: String, required: true },
+    qualification: { type: String, required: true },
+    description: { type: String },
+});
+
+export const DoctorModel = UserModel.discriminator(USER_ROLE.DOCTOR, DoctorSchema);
+
 export default UserModel;

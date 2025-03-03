@@ -3,6 +3,18 @@ import { ResponseCode } from '../constants/response-code.js';
 import * as userService from '../services/userService.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
+export const getAllUsers = async (req, res, next) => {
+    try {
+        return await userService.getAllUsers(req, res, next);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
 export const getMe = async (req, res, next) => {
     try {
         return await userService.getMe(req, res, next);
@@ -18,6 +30,18 @@ export const getMe = async (req, res, next) => {
 export const getUserById = async (req, res, next) => {
     try {
         return await userService.getUserById(req, res, next);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+export const createDoctor = async (req, res, next) => {
+    try {
+        return await userService.createDoctor(req, res, next);
     } catch (error) {
         console.log('Error', error);
         return new ResponseBuilder()
