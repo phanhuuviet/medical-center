@@ -12,3 +12,8 @@ export const ACTIVE_STATUS = {
     ACTIVE: 1,
     INACTIVE: 2,
 };
+
+export const MEDICAL_SERVICE_TYPE_ENUM = {
+    SPECIALITY: 1,
+    EXAMINATION_PAGKAGE: 2,
+};

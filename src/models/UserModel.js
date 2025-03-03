@@ -33,8 +33,8 @@ UserSchema.methods.toJSON = function () {
 const UserModel = mongoose.model('User', UserSchema);
 
 const DoctorSchema = new mongoose.Schema({
-    medicalServiceId: { type: mongoose.Schema.Types.ObjectId, ref: 'MedicalService' },
-    clinicId: { type: mongoose.Schema.Types.ObjectId, ref: 'Clinic' },
+    medicalServiceId: { type: mongoose.Schema.Types.ObjectId, ref: 'MedicalService', default: null },
+    clinicId: { type: mongoose.Schema.Types.ObjectId, ref: 'Clinic', default: null },
     specialty: { type: String, required: true },
     qualification: { type: String, required: true },
     description: { type: String },

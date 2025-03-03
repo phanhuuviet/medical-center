@@ -78,7 +78,7 @@ export const signUp = async (req, res) => {
         if (!userName || !email || !password || !dateOfBirth || !gender || !province || !district) {
             return new ResponseBuilder()
                 .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage('Missing required fields')
+                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
                 .build(res);
         } else if (!checkEmail(email)) {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);

@@ -6,6 +6,7 @@ const ErrorMessage = {
     BAD_REQUEST: 'Yêu cầu không hợp lệ',
     SUCCESS: 'Thành công',
     NOT_ACCEPTABLE: 'Không có quyền truy cập',
+    MISSING_REQUIRED_FIELDS: 'Thiếu trường bắt buộc',
 };
 
 export default ErrorMessage;
