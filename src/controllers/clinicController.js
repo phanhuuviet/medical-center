@@ -10,7 +10,8 @@ export const getAllClinic = async (req, res) => {
         console.log('Error', error);
         return new ResponseBuilder()
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
     }
 };
 
@@ -21,7 +22,8 @@ export const createClinic = async (req, res) => {
         console.log('Error', error);
         return new ResponseBuilder()
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
     }
 };
 
@@ -32,7 +34,8 @@ export const getClinicById = async (req, res) => {
         console.log('Error', error);
         return new ResponseBuilder()
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
     }
 };
 
@@ -43,7 +46,8 @@ export const updateClinic = async (req, res) => {
         console.log('Error', error);
         return new ResponseBuilder()
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
     }
 };
 
@@ -54,7 +58,8 @@ export const updateLogoClinic = async (req, res) => {
         console.log('Error', error);
         return new ResponseBuilder()
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
     }
 };
 
@@ -65,6 +70,7 @@ export const deleteClinic = async (req, res) => {
         console.log('Error', error);
         return new ResponseBuilder()
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR);
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
     }
 };

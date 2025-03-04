@@ -19,6 +19,7 @@ export const authenticateToken = (req, res, next) => {
         // Verify token
         const data = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         req.userId = data.id;
+        req.role = data.role;
         next();
     } catch (error) {
         console.log('Error', error);
@@ -64,7 +65,13 @@ export const authenticateAdmin = (req, res, next) => {
 export const authenticateSelfUserOrAdminMiddleware = (req, res, next) => {
     try {
         const token = req.headers?.authorization.split(' ')[1];
-        const idUser = req.headers?.userid || req.params.id;
+        const idUser =
+            req.params.doctorId ||
+            req.params.userId ||
+            req.params.id ||
+            req.body.userId ||
+            req.body.id ||
+            req.body.doctorId;
 
         const data = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
