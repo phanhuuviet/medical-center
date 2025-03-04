@@ -3,8 +3,9 @@ import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import MedicalServiceModel from '../models/MedicalServiceModel.js';
 import { DoctorModel } from '../models/UserModel.js';
+import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
-import { checkFieldRequire, removeUndefinedFields } from '../utils/validate.js';
+import { checkFieldRequire } from '../utils/validate.js';
 
 // [GET] ${PREFIX_API}/medical-service
 export const getAllMedicalService = async (req, res) => {

@@ -7,3 +7,7 @@ export const removeFieldsInArrayOfObject = (array, fields) => {
         return plainItem;
     });
 };
+
+export const removeUndefinedFields = (obj) => {
+    return Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
+};

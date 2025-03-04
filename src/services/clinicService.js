@@ -3,8 +3,9 @@ import { isNil } from 'lodash-es';
 import ErrorMessage from '../constants/error-message.js';
 import { ResponseCode } from '../constants/response-code.js';
 import ClinicModel from '../models/ClinicModel.js';
+import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
-import { checkEmail, removeUndefinedFields } from '../utils/validate.js';
+import { checkEmail } from '../utils/validate.js';
 
 // [GET] ${PREFIX_API}/clinic
 export const getAllClinic = async (req, res) => {

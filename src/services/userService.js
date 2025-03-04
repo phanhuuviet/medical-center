@@ -8,8 +8,9 @@ import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
 import DoctorWorkingScheduleModel from '../models/DoctorWorkingScheduleModel.js';
 import UserModel, { DoctorModel } from '../models/UserModel.js';
+import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
-import { checkEmail, checkFieldRequire, removeUndefinedFields } from '../utils/validate.js';
+import { checkEmail, checkFieldRequire } from '../utils/validate.js';
 
 // [GET] ${PREFIX_API}/user
 export const getAllUsers = async (req, res) => {
