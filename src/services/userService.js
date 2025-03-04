@@ -6,11 +6,12 @@ import { SALT_ROUNDS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
-import DoctorWorkingScheduleModel from '../models/DoctorWorkingScheduleModel.js';
 import UserModel, { DoctorModel } from '../models/UserModel.js';
 import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail, checkFieldRequire } from '../utils/validate.js';
+
+import * as doctorWorkingScheduleService from './doctorWorkingScheduleService.js';
 
 // [GET] ${PREFIX_API}/user
 export const getAllUsers = async (req, res) => {
@@ -150,15 +151,14 @@ export const createDoctor = async (req, res) => {
 
         // Fetch schedule of clinic and create record of DoctorWorkingSchedule table
         const clinicSchedules = await ClinicScheduleModel.find({ clinicId });
-        if (!isEmpty(clinicSchedules)) {
-            const doctorWorkingSchedules = clinicSchedules.map((clinicSchedule) => {
-                return {
-                    doctorId: newUser._id,
-                    clinicScheduleId: clinicSchedule._id,
-                };
-            });
 
-            await DoctorWorkingScheduleModel.insertMany(doctorWorkingSchedules);
+        if (!isEmpty(clinicSchedules)) {
+            const listDataInsert = clinicSchedules.map((clinicSchedule) => ({
+                doctorId: newUser._id,
+                clinicScheduleId: clinicSchedule._id,
+            }));
+
+            await doctorWorkingScheduleService.insertManyDoctorWorkingSchedule(listDataInsert);
         }
 
         return new ResponseBuilder()

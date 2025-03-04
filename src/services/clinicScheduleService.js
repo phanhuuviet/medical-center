@@ -9,6 +9,8 @@ import { DoctorModel } from '../models/UserModel.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkFieldRequire } from '../utils/validate.js';
 
+import * as doctorWorkingScheduleService from './doctorWorkingScheduleService.js';
+
 // [GET] ${PREFIX_API}/clinic-schedule/:clinicId
 export const getClinicScheduleByClinicId = async (req, res) => {
     try {
@@ -68,16 +70,12 @@ export const createClinicSchedule = async (req, res) => {
         // Get all doctor belong to clinic and create record of DoctorWorkingSchedule table
         const allDoctorBelongToClinic = await DoctorModel.find({ clinicId });
         if (!isEmpty(allDoctorBelongToClinic)) {
-            const queryInsert = allDoctorBelongToClinic.map((doctor) => ({
-                insertOne: {
-                    document: {
-                        doctorId: doctor._id,
-                        clinicScheduleId: newClinicSchedule._id,
-                    },
-                },
+            const listDataInsert = allDoctorBelongToClinic.map((doctor) => ({
+                doctorId: doctor._id,
+                clinicScheduleId: newClinicSchedule._id,
             }));
 
-            await DoctorWorkingScheduleModel.bulkWrite(queryInsert);
+            await doctorWorkingScheduleService.insertManyDoctorWorkingSchedule(listDataInsert);
         }
 
         return new ResponseBuilder()
