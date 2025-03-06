@@ -9,7 +9,7 @@ const MedicalServiceSchema = new mongoose.Schema(
         // facilityAddress: { type: String, required: true },
         originalPrice: { type: Number },
         currentPrice: { type: Number, required: true },
-        type: { type: String, required: true, default: MEDICAL_SERVICE_TYPE_ENUM.SPECIALITY },
+        type: { type: Number, required: true, default: MEDICAL_SERVICE_TYPE_ENUM.SPECIALITY },
         clinicId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Clinic' },
     },
     {

@@ -10,10 +10,20 @@ import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkFieldRequire } from '../utils/validate.js';
 
-// [GET] ${PREFIX_API}/medical-service
+// [GET] ${PREFIX_API}/medical-service?clinicId=clinicId&type=type
 export const getAllMedicalService = async (req, res) => {
     try {
-        const medicalServices = await MedicalServiceModel.find();
+        const { clinicId, type } = req.query;
+
+        const query = {};
+        if (clinicId) {
+            query.clinicId = clinicId;
+        }
+        if (type) {
+            query.type = +type;
+        }
+
+        const medicalServices = await MedicalServiceModel.find(query);
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
