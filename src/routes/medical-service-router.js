@@ -8,6 +8,7 @@ const router = express.Router();
 // [GET]
 router.get('/', medicalServiceController.getAllMedicalService);
 router.get('/:id', medicalServiceController.getMedicalServiceById);
+router.get('/:id/schedules', medicalServiceController.getMedicalServiceSchedules);
 
 // [POST]
 router.post('/', authenticateAdmin, medicalServiceController.createMedicalService);

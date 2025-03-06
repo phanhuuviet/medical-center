@@ -27,6 +27,18 @@ export const getMedicalServiceById = async (req, res) => {
     }
 };
 
+export const getMedicalServiceSchedules = async (req, res) => {
+    try {
+        return await medicalServices.getMedicalServiceSchedules(req, res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
 export const createMedicalService = async (req, res) => {
     try {
         return await medicalServices.createMedicalService(req, res);

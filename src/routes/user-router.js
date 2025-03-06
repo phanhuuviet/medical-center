@@ -15,9 +15,6 @@ router.get('/', authenticateAdmin, userController.getAllUsers);
 router.get('/me', authenticateToken, userController.getMe);
 router.get('/:id', userController.getUserById);
 
-// [PORT]
-router.post('/create-doctor', authenticateAdmin, userController.createDoctor);
-
 // [PUT]
 router.put('/:id/update', authenticateSelfUserOrAdminMiddleware, userController.updateUser);
 router.put(
@@ -29,5 +26,12 @@ router.put(
 
 // [DELETE]
 router.delete('/:id/delete', authenticateAdmin, userController.deleteUser);
+
+// ======= DOCTOR ROUTER =========
+// [GET]
+router.get('/:doctorId/schedules', userController.getDoctorSchedules);
+
+// [PORT]
+router.post('/create-doctor', authenticateAdmin, userController.createDoctor);
 
 export default router;

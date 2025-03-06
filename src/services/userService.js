@@ -80,101 +80,6 @@ export const getUserById = async (req, res) => {
     }
 };
 
-// [POST] ${PREFIX_API}/user/create-doctor
-export const createDoctor = async (req, res) => {
-    try {
-        const {
-            userName,
-            email,
-            password,
-            dateOfBirth,
-            gender,
-            province,
-            district,
-            address,
-            clinicId,
-            medicalServiceId,
-            specialty,
-            qualification,
-            description,
-        } = req.body;
-
-        // Check required fields
-        if (
-            !checkFieldRequire(
-                userName,
-                email,
-                password,
-                dateOfBirth,
-                gender,
-                province,
-                district,
-                clinicId,
-                specialty,
-                qualification,
-            )
-        ) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-                .build(res);
-        } else if (!checkEmail(email)) {
-            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);
-        }
-
-        const checkUser = await UserModel.findOne({ email });
-        if (!isNil(checkUser)) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage('Email is already taken')
-                .build(res);
-        }
-
-        const hashPassword = bcrypt.hashSync(password, SALT_ROUNDS);
-
-        const newUser = await DoctorModel.create({
-            userName,
-            email,
-            password: hashPassword,
-            dateOfBirth,
-            gender,
-            province,
-            district,
-            address,
-            clinicId,
-            medicalServiceId,
-            specialty,
-            qualification,
-            description,
-            role: USER_ROLE.DOCTOR,
-        });
-
-        // Fetch schedule of clinic and create record of DoctorWorkingSchedule table
-        const clinicSchedules = await ClinicScheduleModel.find({ clinicId });
-
-        if (!isEmpty(clinicSchedules)) {
-            const listDataInsert = clinicSchedules.map((clinicSchedule) => ({
-                doctorId: newUser._id,
-                clinicScheduleId: clinicSchedule._id,
-            }));
-
-            await doctorWorkingScheduleService.insertManyDoctorWorkingSchedule(listDataInsert);
-        }
-
-        return new ResponseBuilder()
-            .withCode(ResponseCode.SUCCESS)
-            .withMessage('Create doctor success')
-            .withData(newUser)
-            .build(res);
-    } catch (error) {
-        console.log('Error', error);
-        return new ResponseBuilder()
-            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
-            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
-            .build(res);
-    }
-};
-
 // [PUT] ${PREFIX_API}/user/:id/update
 export const updateUser = async (req, res) => {
     try {
@@ -271,6 +176,128 @@ export const deleteUser = async (req, res) => {
         await UserModel.findByIdAndDelete(userId);
 
         return new ResponseBuilder().withCode(ResponseCode.SUCCESS).withMessage('Delete user success').build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// ========= DOCTOR =========
+// [GET] ${PREFIX_API}/user/:doctorId/schedules
+export const getDoctorSchedules = async (req, res) => {
+    try {
+        const doctorId = req.params.doctorId;
+
+        const checkDoctor = await DoctorModel.findOne({ _id: doctorId });
+        if (isNil(checkDoctor)) {
+            return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Doctor is not found').build(res);
+        }
+
+        const doctorSchedules = await ClinicScheduleModel.find({ clinicId: checkDoctor.clinicId });
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Get doctor schedules success')
+            .withData(doctorSchedules)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [POST] ${PREFIX_API}/user/create-doctor
+export const createDoctor = async (req, res) => {
+    try {
+        const {
+            userName,
+            email,
+            password,
+            dateOfBirth,
+            gender,
+            province,
+            district,
+            address,
+            clinicId,
+            medicalServiceId,
+            specialty,
+            qualification,
+            description,
+        } = req.body;
+
+        // Check required fields
+        if (
+            !checkFieldRequire(
+                userName,
+                email,
+                password,
+                dateOfBirth,
+                gender,
+                province,
+                district,
+                clinicId,
+                specialty,
+                qualification,
+            )
+        ) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
+                .build(res);
+        } else if (!checkEmail(email)) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);
+        }
+
+        const checkUser = await UserModel.findOne({ email });
+        if (!isNil(checkUser)) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Email is already taken')
+                .build(res);
+        }
+
+        const hashPassword = bcrypt.hashSync(password, SALT_ROUNDS);
+
+        const newUser = await DoctorModel.create({
+            userName,
+            email,
+            password: hashPassword,
+            dateOfBirth,
+            gender,
+            province,
+            district,
+            address,
+            clinicId,
+            medicalServiceId,
+            specialty,
+            qualification,
+            description,
+            role: USER_ROLE.DOCTOR,
+        });
+
+        // Fetch schedule of clinic and create record of DoctorWorkingSchedule table
+        const clinicSchedules = await ClinicScheduleModel.find({ clinicId });
+
+        if (!isEmpty(clinicSchedules)) {
+            const listDataInsert = clinicSchedules.map((clinicSchedule) => ({
+                doctorId: newUser._id,
+                clinicScheduleId: clinicSchedule._id,
+            }));
+
+            await doctorWorkingScheduleService.insertManyDoctorWorkingSchedule(listDataInsert);
+        }
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Create doctor success')
+            .withData(newUser)
+            .build(res);
     } catch (error) {
         console.log('Error', error);
         return new ResponseBuilder()

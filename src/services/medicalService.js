@@ -1,6 +1,9 @@
+import { isNil } from 'lodash-es';
+
 import ErrorMessage from '../constants/error-message.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
+import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
 import MedicalServiceModel from '../models/MedicalServiceModel.js';
 import { DoctorModel } from '../models/UserModel.js';
 import { removeUndefinedFields } from '../utils/index.js';
@@ -43,6 +46,35 @@ export const getMedicalServiceById = async (req, res) => {
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get medical service success')
             .withData(checkMedicalService)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [GET] ${PREFIX_API}/medical-service/:id/schedules
+export const getMedicalServiceSchedules = async (req, res) => {
+    try {
+        const medicalServiceId = req.params.id;
+
+        const checkMedicalService = await MedicalServiceModel.findOne({ _id: medicalServiceId });
+        if (isNil(checkMedicalService)) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.NOT_FOUND)
+                .withMessage('Medical service is not found')
+                .build(res);
+        }
+
+        const schedules = await ClinicScheduleModel.find({ clinicId: checkMedicalService.clinicId });
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Get medical service schedules success')
+            .withData(schedules)
             .build(res);
     } catch (error) {
         console.log('Error', error);
