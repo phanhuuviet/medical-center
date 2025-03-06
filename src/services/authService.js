@@ -9,6 +9,8 @@ import { generateAccessToken, generateRefreshToken } from '../utils/generate-jwt
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail } from '../utils/validate.js';
 
+import * as healthRecordService from './healthRecordService.js';
+
 // [POST] ${PREFIX_API}/auth/sign-in
 export const signIn = async (req, res) => {
     try {
@@ -104,6 +106,9 @@ export const signUp = async (req, res) => {
             district,
             address,
         });
+
+        // Create health record for new user
+        await healthRecordService.createHealthRecord({ userId: newUser._id });
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
