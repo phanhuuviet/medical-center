@@ -17,3 +17,19 @@ export const MEDICAL_SERVICE_TYPE_ENUM = {
     SPECIALITY: 1,
     EXAMINATION_PAGKAGE: 2,
 };
+
+export const PAYMENT_METHOD_ENUM = {
+    CASH: 1,
+    VNPAY: 2,
+};
+
+export const PAYMENT_STATUS_ENUM = {
+    PAID: 1,
+    UNPAID: 2,
+};
+
+export const MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM = {
+    PENDING: 1, // CHƯA KHÁM
+    CANCELED: 2, // ĐÃ HỦY
+    DONE: 3, // HOÀN THÀNH
+};
