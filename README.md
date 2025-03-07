@@ -15,3 +15,11 @@ yarn
 ```bash
 yarn dev
 ```
+
+## Finish
+
+It will running on port 3002 (http://localhost:3002) 👌
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
