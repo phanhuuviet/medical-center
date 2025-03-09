@@ -30,6 +30,7 @@ router.delete('/:id/delete', authenticateAdmin, userController.deleteUser);
 // ======= DOCTOR ROUTER =========
 // [GET]
 router.get('/:doctorId/schedules', userController.getDoctorSchedules);
+router.get('/:doctorId/patients', userController.getAllPatientsByDoctor);
 
 // [PORT]
 router.post('/create-doctor', authenticateAdmin, userController.createDoctor);

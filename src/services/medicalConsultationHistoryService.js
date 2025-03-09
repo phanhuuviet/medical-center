@@ -163,31 +163,31 @@ export const updateMedicalConsultationHistory = async (req, res) => {
             patientDistrict,
             patientAddress,
         } = req.body;
-        if (
-            !checkFieldRequire(
-                patientId,
-                clinicId,
-                examinationDate,
-                clinicScheduleId,
-                examinationReason,
-                medicalFee,
-                medicalServiceName,
-                paymentMethod,
-                patientName,
-                patientGender,
-                patientPhoneNumber,
-                patientEmail,
-                patientDateOfBirth,
-                patientProvince,
-                patientDistrict,
-                patientAddress,
-            )
-        ) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-                .build(res);
-        }
+        // if (
+        //     !checkFieldRequire(
+        //         patientId,
+        //         clinicId,
+        //         examinationDate,
+        //         clinicScheduleId,
+        //         examinationReason,
+        //         medicalFee,
+        //         medicalServiceName,
+        //         paymentMethod,
+        //         patientName,
+        //         patientGender,
+        //         patientPhoneNumber,
+        //         patientEmail,
+        //         patientDateOfBirth,
+        //         patientProvince,
+        //         patientDistrict,
+        //         patientAddress,
+        //     )
+        // ) {
+        //     return new ResponseBuilder()
+        //         .withCode(ResponseCode.BAD_REQUEST)
+        //         .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
+        //         .build(res);
+        // }
 
         const checkMedicalConsultationHistory = await MedicalConsultationHistoryModel.findOne({
             _id: medicalConsultationHistoryId,

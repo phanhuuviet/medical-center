@@ -88,6 +88,18 @@ export const getDoctorSchedules = async (req, res, next) => {
     }
 };
 
+export const getAllPatientsByDoctor = async (req, res, next) => {
+    try {
+        return await userService.getAllPatientsByDoctor(req, res, next);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
 export const createDoctor = async (req, res, next) => {
     try {
         return await userService.createDoctor(req, res, next);

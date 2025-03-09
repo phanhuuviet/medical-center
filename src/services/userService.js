@@ -6,6 +6,7 @@ import { SALT_ROUNDS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
+import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
 import UserModel, { DoctorModel } from '../models/UserModel.js';
 import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
@@ -202,6 +203,35 @@ export const getDoctorSchedules = async (req, res) => {
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get doctor schedules success')
             .withData(doctorSchedules)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [GET] ${PREFIX_API}/user/:doctorId/patients
+export const getAllPatientsByDoctor = async (req, res) => {
+    try {
+        const doctorId = req.params.doctorId;
+
+        const checkDoctor = await DoctorModel.findOne({ _id: doctorId });
+        if (isNil(checkDoctor)) {
+            return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Doctor is not found').build(res);
+        }
+
+        const patients = await MedicalConsultationHistoryModel.find({ responsibilityDoctorId: doctorId });
+        const patientIds = patients.map((patient) => patient.patientId);
+
+        const allPatients = await UserModel.find({ _id: { $in: patientIds } });
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Get doctor patients success')
+            .withData(allPatients)
             .build(res);
     } catch (error) {
         console.log('Error', error);
