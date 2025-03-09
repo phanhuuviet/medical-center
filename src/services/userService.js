@@ -8,7 +8,7 @@ import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
 import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
 import UserModel, { DoctorModel } from '../models/UserModel.js';
-import { removeUndefinedFields } from '../utils/index.js';
+import { removeFieldsInArrayOfObject, removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail, checkFieldRequire } from '../utils/validate.js';
 
@@ -197,12 +197,16 @@ export const getDoctorSchedules = async (req, res) => {
             return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Doctor is not found').build(res);
         }
 
-        const doctorSchedules = await ClinicScheduleModel.find({ clinicId: checkDoctor.clinicId });
+        const doctorSchedules = await MedicalConsultationHistoryModel.find({
+            responsibilityDoctorId: checkDoctor._id,
+        }).populate('clinicSchedule');
+
+        const response = removeFieldsInArrayOfObject(doctorSchedules, ['clinicScheduleId']);
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get doctor schedules success')
-            .withData(doctorSchedules)
+            .withData(response)
             .build(res);
     } catch (error) {
         console.log('Error', error);

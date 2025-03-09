@@ -41,8 +41,38 @@ const MedicalConsultationHistorySchema = new mongoose.Schema(
     {
         timestamps: true,
         collection: 'MedicalConsultationHistory',
+        toObject: { virtuals: true },
+        toJSON: { virtuals: true },
     },
 );
+
+MedicalConsultationHistorySchema.virtual('patient', {
+    ref: 'User',
+    localField: 'patientId',
+    foreignField: '_id',
+    justOne: true,
+});
+
+MedicalConsultationHistorySchema.virtual('responsibilityDoctor', {
+    ref: 'Doctor',
+    localField: 'responsibilityDoctorId',
+    foreignField: '_id',
+    justOne: true,
+});
+
+MedicalConsultationHistorySchema.virtual('clinic', {
+    ref: 'Clinic',
+    localField: 'clinicId',
+    foreignField: '_id',
+    justOne: true,
+});
+
+MedicalConsultationHistorySchema.virtual('clinicSchedule', {
+    ref: 'ClinicSchedule',
+    localField: 'clinicScheduleId',
+    foreignField: '_id',
+    justOne: true,
+});
 
 MedicalConsultationHistorySchema.pre('validate', function (next) {
     if (!this?.code) {
