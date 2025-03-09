@@ -19,3 +19,8 @@ export const removeFieldsInObject = (obj, fields) => {
 export const removeUndefinedFields = (obj) => {
     return Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
 };
+
+export const getDateFromISOFormat = (date) => {
+    const dateObj = new Date(date);
+    return dateObj.toISOString().split('T')[0];
+};

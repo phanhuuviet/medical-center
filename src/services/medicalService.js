@@ -1,12 +1,15 @@
-import { isNil } from 'lodash-es';
+import { groupBy } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
+import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
+import LeaveScheduleModel from '../models/LeaveScheduleModel.js';
+import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
 import MedicalServiceModel from '../models/MedicalServiceModel.js';
 import { DoctorModel } from '../models/UserModel.js';
-import { removeUndefinedFields } from '../utils/index.js';
+import { getDateFromISOFormat, removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkFieldRequire } from '../utils/validate.js';
 
@@ -66,28 +69,75 @@ export const getMedicalServiceById = async (req, res) => {
     }
 };
 
-// [GET] ${PREFIX_API}/medical-service/:id/schedules
+// [GET] ${PREFIX_API}/medical-service/:id/schedules?date=date
 export const getMedicalServiceSchedules = async (req, res) => {
     try {
         const medicalServiceId = req.params.id;
+        const { date } = req.query;
 
-        const checkMedicalService = await MedicalServiceModel.findOne({ _id: medicalServiceId });
-        if (isNil(checkMedicalService)) {
+        // Kiểm tra xem dịch vụ y tế có tồn tại không
+        const checkMedicalService = await MedicalServiceModel.findById(medicalServiceId);
+        if (!checkMedicalService) {
             return new ResponseBuilder()
                 .withCode(ResponseCode.NOT_FOUND)
                 .withMessage('Medical service is not found')
                 .build(res);
         }
 
+        // Lấy tất cả lịch làm việc của phòng khám
         const schedules = await ClinicScheduleModel.find({ clinicId: checkMedicalService.clinicId });
+        if (!date) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.SUCCESS)
+                .withMessage('Get medical service schedules success')
+                .withData(schedules)
+                .build(res);
+        }
+
+        // B1: Lấy danh sách bác sĩ thuộc dịch vụ y tế
+        const allDoctors = await DoctorModel.find({ medicalServiceId }, { _id: 1 });
+        const allDoctorIds = allDoctors.map((doc) => doc._id);
+
+        // B2: Truy vấn lịch nghỉ và lịch khám
+        const [leaveSchedules, workingSchedules] = await Promise.all([
+            LeaveScheduleModel.find({
+                doctorId: { $in: allDoctorIds },
+                date: getDateFromISOFormat(date),
+            }).populate('clinicSchedule'),
+
+            MedicalConsultationHistoryModel.find({
+                clinicId: checkMedicalService.clinicId,
+                clinicScheduleId: { $in: schedules.map((s) => s._id) },
+                examinationDate: date,
+                status: {
+                    $in: [
+                        MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.PENDING,
+                        MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE,
+                    ],
+                },
+            }),
+        ]);
+
+        // B3: Nhóm dữ liệu theo clinicScheduleId
+        const leaveSchedulesGrouped = groupBy(leaveSchedules, 'clinicScheduleId');
+        const workingSchedulesGrouped = groupBy(workingSchedules, 'clinicScheduleId');
+
+        // B4: Lọc ra các ca làm việc có slot trống
+        const availableSchedules = schedules.filter((schedule) => {
+            const numberSlotInAShift = allDoctors.length;
+            const numberOfDoctorLeave = leaveSchedulesGrouped[schedule._id]?.length || 0;
+            const numberOfDoctorWorking = workingSchedulesGrouped[schedule._id]?.length || 0;
+
+            return numberSlotInAShift - numberOfDoctorLeave - numberOfDoctorWorking > 0;
+        });
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get medical service schedules success')
-            .withData(schedules)
+            .withData(availableSchedules)
             .build(res);
     } catch (error) {
-        console.log('Error', error);
+        console.error('Error:', error);
         return new ResponseBuilder()
             .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
