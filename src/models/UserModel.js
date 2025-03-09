@@ -6,6 +6,7 @@ import { USER_ROLE } from '../constants/role.js';
 const UserSchema = new mongoose.Schema(
     {
         userName: { type: String, required: true },
+        code: { type: String, default: null },
         email: { type: String, required: true },
         password: { type: String, required: true },
         dateOfBirth: { type: Date, required: true },
@@ -29,6 +30,13 @@ UserSchema.methods.toJSON = function () {
     delete userObject.password;
     return userObject;
 };
+
+UserSchema.pre('validate', function (next) {
+    if (!this?.code) {
+        this.code = this._id?.toString().substring(0, 8).toUpperCase();
+    }
+    next();
+});
 
 const UserModel = mongoose.model('User', UserSchema);
 

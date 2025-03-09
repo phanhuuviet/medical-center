@@ -44,5 +44,12 @@ const MedicalConsultationHistorySchema = new mongoose.Schema(
     },
 );
 
+MedicalConsultationHistorySchema.pre('validate', function (next) {
+    if (!this?.code) {
+        this.code = this._id?.toString().substring(0, 12).toUpperCase();
+    }
+    next();
+});
+
 const MedicalConsultationHistoryModel = mongoose.model('MedicalConsultationHistory', MedicalConsultationHistorySchema);
 export default MedicalConsultationHistoryModel;
