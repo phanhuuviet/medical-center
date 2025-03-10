@@ -7,9 +7,21 @@ import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail } from '../utils/validate.js';
 
-// [GET] ${PREFIX_API}/clinic
+// [GET] ${PREFIX_API}/clinic?name=name&address=address&status=status
 export const getAllClinic = async (req, res) => {
     try {
+        const { name, address, status } = req.query;
+        const query = {};
+        if (name) {
+            query.name = { $regex: name, $options: 'i' };
+        }
+        if (address) {
+            query.address = { $regex: address, $options: 'i' };
+        }
+        if (status) {
+            query.status = +status;
+        }
+
         const clinics = await ClinicModel.find();
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)

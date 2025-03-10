@@ -14,10 +14,22 @@ import { checkEmail, checkFieldRequire } from '../utils/validate.js';
 
 import * as doctorWorkingScheduleService from './doctorWorkingScheduleService.js';
 
-// [GET] ${PREFIX_API}/user
+// [GET] ${PREFIX_API}/user?role=role&code=code&userName=userName
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await UserModel.find();
+        const { role, code, userName } = req.query;
+        const query = {};
+        if (role) {
+            query.role = +role;
+        }
+        if (code) {
+            query.code = { $regex: code, $options: 'i' };
+        }
+        if (userName) {
+            query.userName = { $regex: userName, $options: 'i' };
+        }
+
+        const users = await UserModel.find(query);
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)

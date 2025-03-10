@@ -5,10 +5,41 @@ import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistor
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkFieldRequire } from '../utils/validate.js';
 
-// [GET] ${PREFIX_API}/medical-consultation-history
+// [GET] ${PREFIX_API}/medical-consultation-history?patientId=patientId
+// &clinicId=clinicId
+// &status=status
+// &responsibilityDoctorId=responsibilityDoctorId
+// &patientName=patientName
+// &examinationDate=examinationDate
+// &clinicScheduleId=clinicScheduleId
 export const getAllMedicalConsultationHistory = async (req, res) => {
     try {
-        const medicalConsultationHistories = await MedicalConsultationHistoryModel.find();
+        const { patientId, clinicId, status, responsibilityDoctorId, patientName, examinationDate, clinicScheduleId } =
+            req.query;
+        const query = {};
+        if (patientId) {
+            query.patientId = patientId;
+        }
+        if (clinicId) {
+            query.clinicId = clinicId;
+        }
+        if (status) {
+            query.status = +status;
+        }
+        if (responsibilityDoctorId) {
+            query.responsibilityDoctorId = responsibilityDoctorId;
+        }
+        if (patientName) {
+            query.patientName = { $regex: patientName, $options: 'i' };
+        }
+        if (examinationDate) {
+            query.examinationDate = examinationDate;
+        }
+        if (clinicScheduleId) {
+            query.clinicScheduleId = clinicScheduleId;
+        }
+
+        const medicalConsultationHistories = await MedicalConsultationHistoryModel.find(query);
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get medical consultation history success')
