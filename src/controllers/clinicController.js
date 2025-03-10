@@ -63,6 +63,30 @@ export const updateLogoClinic = async (req, res) => {
     }
 };
 
+export const activeClinic = async (req, res) => {
+    try {
+        return await clinicService.activeClinic(req, res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+export const inActiveClinic = async (req, res) => {
+    try {
+        return await clinicService.inActiveClinic(req, res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
 export const deleteClinic = async (req, res) => {
     try {
         return await clinicService.deleteClinic(req, res);

@@ -1,6 +1,7 @@
 import { isNil } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
+import { ACTIVE_STATUS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import ClinicModel from '../models/ClinicModel.js';
 import { removeUndefinedFields } from '../utils/index.js';
@@ -165,6 +166,72 @@ export const updateLogo = async (req, res) => {
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Update avatar success')
             .withData(updatedClinic)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [PUT] ${PREFIX_API}/clinic/:id/active
+export const activeClinic = async (req, res) => {
+    try {
+        const clinicId = req.params.id;
+
+        const checkClinic = await ClinicModel.findOne({ _id: clinicId });
+
+        if (isNil(checkClinic)) {
+            return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Clinic is not found').build(res);
+        }
+
+        const response = await ClinicModel.findOneAndUpdate(
+            { _id: clinicId },
+            { status: ACTIVE_STATUS.ACTIVE },
+            {
+                new: true,
+            },
+        );
+
+        return new ResponseBuilder()
+            .withData(response)
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Active clinic success')
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [PUT] ${PREFIX_API}/clinic/:id/inactive
+export const inActiveClinic = async (req, res) => {
+    try {
+        const clinicId = req.params.id;
+
+        const checkClinic = await ClinicModel.findOne({ _id: clinicId });
+
+        if (isNil(checkClinic)) {
+            return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Clinic is not found').build(res);
+        }
+
+        const response = await ClinicModel.findOneAndUpdate(
+            { _id: clinicId },
+            { status: ACTIVE_STATUS.INACTIVE },
+            {
+                new: true,
+            },
+        );
+
+        return new ResponseBuilder()
+            .withData(response)
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Unactive clinic success')
             .build(res);
     } catch (error) {
         console.log('Error', error);
