@@ -2,9 +2,9 @@ import ErrorMessage from '../constants/error-message.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import LeaveScheduleModel from '../models/LeaveScheduleModel.js';
+import { leaveScheduleSchema } from '../schemas/leaveSchedule-schema.js';
 import { removeFieldsInArrayOfObject } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
-import { checkFieldRequire } from '../utils/validate.js';
 
 // [GET] ${PREFIX_API}/leave-schedule/:doctorId
 export const getLeaveScheduleByDoctorId = async (req, res) => {
@@ -34,11 +34,11 @@ export const createLeaveSchedule = async (req, res) => {
     try {
         const { clinicScheduleId, doctorId, date, reason } = req.body;
 
-        if (!checkFieldRequire(clinicScheduleId, doctorId, date)) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-                .build(res);
+        const { error } = leaveScheduleSchema.validate({ clinicScheduleId, doctorId, date });
+        const messageError = error?.details[0].message;
+
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         }
 
         const checkLeaveSchedule = await LeaveScheduleModel.findOne({ clinicScheduleId, doctorId, date });

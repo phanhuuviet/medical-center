@@ -2,8 +2,8 @@ import ErrorMessage from '../constants/error-message.js';
 import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
+import { medicalConsultationHistorySchema } from '../schemas/medicalConsultationHistory-schema.js';
 import ResponseBuilder from '../utils/response-builder.js';
-import { checkFieldRequire } from '../utils/validate.js';
 
 // [GET] ${PREFIX_API}/medical-consultation-history?patientId=patientId
 // &clinicId=clinicId
@@ -105,30 +105,29 @@ export const createMedicalConsultationHistory = async (req, res) => {
             patientDistrict,
             patientAddress,
         } = req.body;
-        if (
-            !checkFieldRequire(
-                patientId,
-                clinicId,
-                examinationDate,
-                clinicScheduleId,
-                examinationReason,
-                medicalFee,
-                medicalServiceName,
-                paymentMethod,
-                patientName,
-                patientGender,
-                patientPhoneNumber,
-                patientEmail,
-                patientDateOfBirth,
-                patientProvince,
-                patientDistrict,
-                patientAddress,
-            )
-        ) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-                .build(res);
+
+        const { error } = medicalConsultationHistorySchema.validate({
+            patientId,
+            clinicId,
+            examinationDate,
+            clinicScheduleId,
+            examinationReason,
+            medicalFee,
+            medicalServiceName,
+            paymentMethod,
+            patientName,
+            patientGender,
+            patientPhoneNumber,
+            patientEmail,
+            patientDateOfBirth,
+            patientProvince,
+            patientDistrict,
+            patientAddress,
+        });
+        const messageError = error?.details[0].message;
+
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         }
 
         const medicalConsultationHistory = new MedicalConsultationHistoryModel({
@@ -194,31 +193,30 @@ export const updateMedicalConsultationHistory = async (req, res) => {
             patientDistrict,
             patientAddress,
         } = req.body;
-        // if (
-        //     !checkFieldRequire(
-        //         patientId,
-        //         clinicId,
-        //         examinationDate,
-        //         clinicScheduleId,
-        //         examinationReason,
-        //         medicalFee,
-        //         medicalServiceName,
-        //         paymentMethod,
-        //         patientName,
-        //         patientGender,
-        //         patientPhoneNumber,
-        //         patientEmail,
-        //         patientDateOfBirth,
-        //         patientProvince,
-        //         patientDistrict,
-        //         patientAddress,
-        //     )
-        // ) {
-        //     return new ResponseBuilder()
-        //         .withCode(ResponseCode.BAD_REQUEST)
-        //         .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-        //         .build(res);
-        // }
+
+        const { error } = medicalConsultationHistorySchema.validate({
+            patientId,
+            clinicId,
+            examinationDate,
+            clinicScheduleId,
+            examinationReason,
+            medicalFee,
+            medicalServiceName,
+            paymentMethod,
+            patientName,
+            patientGender,
+            patientPhoneNumber,
+            patientEmail,
+            patientDateOfBirth,
+            patientProvince,
+            patientDistrict,
+            patientAddress,
+        });
+        const messageError = error?.details[0].message;
+
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
+        }
 
         const checkMedicalConsultationHistory = await MedicalConsultationHistoryModel.findOne({
             _id: medicalConsultationHistoryId,

@@ -11,3 +11,13 @@ export const checkEmail = (email) => {
 export const checkFieldRequire = (...fields) => {
     return fields.every((field) => !isNil(field));
 };
+
+export const checkTest = (fields) => {
+    console.log('field', fields);
+    for (const key in fields) {
+        if (!fields[key]) {
+            return key;
+        }
+    }
+    return null;
+};

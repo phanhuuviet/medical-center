@@ -5,6 +5,7 @@ import ErrorMessage from '../constants/error-message.js';
 import { SALT_ROUNDS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import UserModel from '../models/UserModel.js';
+import { signInSchema, signUpSchema } from '../schemas/auth-schema.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/generate-jwt.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail } from '../utils/validate.js';
@@ -16,11 +17,11 @@ export const signIn = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        if (!email || !password) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage('Email and password are required')
-                .build(res);
+        const { error } = signInSchema.validate({ email, password });
+        const messageError = error?.details[0].message;
+
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         } else if (!checkEmail(email)) {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);
         }
@@ -76,12 +77,20 @@ export const signUp = async (req, res) => {
     try {
         const { userName, email, password, dateOfBirth, gender, province, district, address } = req.body;
 
+        const { error } = signUpSchema.validate({
+            userName,
+            email,
+            password,
+            dateOfBirth,
+            gender,
+            province,
+            district,
+        });
+        const messageError = error?.details[0].message;
+
         // Check required fields
-        if (!userName || !email || !password || !dateOfBirth || !gender || !province || !district) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-                .build(res);
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         } else if (!checkEmail(email)) {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);
         }

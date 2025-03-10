@@ -6,8 +6,8 @@ import ClinicModel from '../models/ClinicModel.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
 import DoctorWorkingScheduleModel from '../models/DoctorWorkingScheduleModel.js';
 import { DoctorModel } from '../models/UserModel.js';
+import { clinicScheduleSchema } from '../schemas/clinicSchedule-schema.js';
 import ResponseBuilder from '../utils/response-builder.js';
-import { checkFieldRequire } from '../utils/validate.js';
 
 import * as doctorWorkingScheduleService from './doctorWorkingScheduleService.js';
 
@@ -35,11 +35,12 @@ export const getClinicScheduleByClinicId = async (req, res) => {
 export const createClinicSchedule = async (req, res) => {
     try {
         const { clinicId, startTime, endTime } = req.body;
-        if (!checkFieldRequire(clinicId, startTime, endTime)) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-                .build(res);
+
+        const { error } = clinicScheduleSchema.validate({ clinicId, startTime, endTime });
+        const messageError = error?.details[0].message;
+
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         }
 
         // Check clinic is exist

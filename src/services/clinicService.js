@@ -4,6 +4,7 @@ import ErrorMessage from '../constants/error-message.js';
 import { ACTIVE_STATUS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import ClinicModel from '../models/ClinicModel.js';
+import { clinicSchema } from '../schemas/clinic-schema.js';
 import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail } from '../utils/validate.js';
@@ -66,11 +67,12 @@ export const getClinicById = async (req, res) => {
 export const createClinic = async (req, res) => {
     try {
         const { name, email, hotline, address, description } = req.body;
-        if (!name || !email || !hotline || !address) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-                .build(res);
+
+        const { error } = clinicSchema.validate({ name, email, hotline, address });
+        const messageError = error?.details[0].message;
+
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         } else if (!checkEmail(email)) {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);
         }
@@ -112,6 +114,13 @@ export const updateClinic = async (req, res) => {
     try {
         const clinicId = req.params.id;
         const { name, email, hotline, address, description } = req.body;
+
+        const { error } = clinicSchema.validate({ name, email, hotline, address });
+        const messageError = error?.details[0].message;
+
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
+        }
 
         const updatedData = {
             name,

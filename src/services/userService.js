@@ -8,9 +8,10 @@ import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
 import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
 import UserModel, { DoctorModel } from '../models/UserModel.js';
+import { doctorSchema } from '../schemas/user-schema.js';
 import { removeFieldsInArrayOfObject, removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
-import { checkEmail, checkFieldRequire } from '../utils/validate.js';
+import { checkEmail } from '../utils/validate.js';
 
 import * as doctorWorkingScheduleService from './doctorWorkingScheduleService.js';
 
@@ -277,25 +278,23 @@ export const createDoctor = async (req, res) => {
             description,
         } = req.body;
 
+        const { error } = doctorSchema.validate({
+            userName,
+            email,
+            password,
+            dateOfBirth,
+            gender,
+            province,
+            district,
+            clinicId,
+            specialty,
+            qualification,
+        });
+        const messageError = error?.details[0].message;
+
         // Check required fields
-        if (
-            !checkFieldRequire(
-                userName,
-                email,
-                password,
-                dateOfBirth,
-                gender,
-                province,
-                district,
-                clinicId,
-                specialty,
-                qualification,
-            )
-        ) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-                .build(res);
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         } else if (!checkEmail(email)) {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);
         }

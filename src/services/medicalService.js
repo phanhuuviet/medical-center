@@ -9,9 +9,9 @@ import LeaveScheduleModel from '../models/LeaveScheduleModel.js';
 import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
 import MedicalServiceModel from '../models/MedicalServiceModel.js';
 import { DoctorModel } from '../models/UserModel.js';
+import { medicalServiceSchema } from '../schemas/medicalService-schema.js';
 import { getDateFromISOFormat, removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
-import { checkFieldRequire } from '../utils/validate.js';
 
 // [GET] ${PREFIX_API}/medical-service?clinicId=clinicId&type=type
 export const getAllMedicalService = async (req, res) => {
@@ -150,11 +150,11 @@ export const createMedicalService = async (req, res) => {
     try {
         const { name, originalPrice, currentPrice, type, clinicId, doctorIds } = req.body;
 
-        if (!checkFieldRequire(name, currentPrice, type, clinicId)) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage(ErrorMessage.MISSING_REQUIRED_FIELDS)
-                .build(res);
+        const { error } = medicalServiceSchema.validate({ name, currentPrice, type, clinicId });
+        const messageError = error?.details[0].message;
+
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         }
 
         const newMedicalService = await MedicalServiceModel.create({
