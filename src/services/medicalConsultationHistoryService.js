@@ -1,5 +1,5 @@
 import ErrorMessage from '../constants/error-message.js';
-import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM } from '../constants/index.js';
+import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
 import { medicalConsultationHistorySchema } from '../schemas/medicalConsultationHistory-schema.js';
@@ -12,38 +12,46 @@ import ResponseBuilder from '../utils/response-builder.js';
 // &patientName=patientName
 // &examinationDate=examinationDate
 // &clinicScheduleId=clinicScheduleId
+// &_page=_page
+// &_pageSize=_pageSize
 export const getAllMedicalConsultationHistory = async (req, res) => {
     try {
-        const { patientId, clinicId, status, responsibilityDoctorId, patientName, examinationDate, clinicScheduleId } =
-            req.query;
-        const query = {};
-        if (patientId) {
-            query.patientId = patientId;
-        }
-        if (clinicId) {
-            query.clinicId = clinicId;
-        }
-        if (status) {
-            query.status = +status;
-        }
-        if (responsibilityDoctorId) {
-            query.responsibilityDoctorId = responsibilityDoctorId;
-        }
-        if (patientName) {
-            query.patientName = { $regex: patientName, $options: 'i' };
-        }
-        if (examinationDate) {
-            query.examinationDate = examinationDate;
-        }
-        if (clinicScheduleId) {
-            query.clinicScheduleId = clinicScheduleId;
-        }
+        const {
+            patientId,
+            clinicId,
+            status,
+            responsibilityDoctorId,
+            patientName,
+            examinationDate,
+            clinicScheduleId,
+            _page = 1,
+            _pageSize = PAGE_SIZE,
+        } = req.query;
+        const query = {
+            ...(patientId && { patientId }),
+            ...(clinicId && { clinicId }),
+            ...(status && { status: +status }),
+            ...(responsibilityDoctorId && { responsibilityDoctorId }),
+            ...(patientName && { patientName: { $regex: patientName, $options: 'i' } }),
+            ...(examinationDate && { examinationDate }),
+            ...(clinicScheduleId && { clinicScheduleId }),
+        };
 
-        const medicalConsultationHistories = await MedicalConsultationHistoryModel.find(query);
+        const page = Math.max(1, Number(_page));
+        const pageSize = Math.max(1, Number(_pageSize));
+        const skip = pageSize * (page - 1);
+
+        const [medicalConsultationHistories, totalDocuments] = await Promise.all([
+            MedicalConsultationHistoryModel.find(query).skip(skip).limit(pageSize),
+            MedicalConsultationHistoryModel.countDocuments(query),
+        ]);
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get medical consultation history success')
-            .withData(medicalConsultationHistories)
+            .withData({
+                items: medicalConsultationHistories,
+                meta: { total: totalDocuments, page },
+            })
             .build(res);
     } catch (error) {
         console.log('Error', error);

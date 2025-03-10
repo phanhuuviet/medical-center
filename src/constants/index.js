@@ -33,3 +33,5 @@ export const MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM = {
     CANCELED: 2, // ĐÃ HỦY
     DONE: 3, // HOÀN THÀNH
 };
+
+export const PAGE_SIZE = 10;

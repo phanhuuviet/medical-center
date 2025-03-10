@@ -1,7 +1,7 @@
 import { isNil } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
-import { ACTIVE_STATUS } from '../constants/index.js';
+import { ACTIVE_STATUS, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import ClinicModel from '../models/ClinicModel.js';
 import { clinicSchema } from '../schemas/clinic-schema.js';
@@ -9,26 +9,33 @@ import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail } from '../utils/validate.js';
 
-// [GET] ${PREFIX_API}/clinic?name=name&address=address&status=status
+// [GET] ${PREFIX_API}/clinic?name=name&address=address&status=status&_page=_page&_pageSize=_pageSize
 export const getAllClinic = async (req, res) => {
     try {
-        const { name, address, status } = req.query;
-        const query = {};
-        if (name) {
-            query.name = { $regex: name, $options: 'i' };
-        }
-        if (address) {
-            query.address = { $regex: address, $options: 'i' };
-        }
-        if (status) {
-            query.status = +status;
-        }
+        const { name, address, status, _page = 1, _pageSize = PAGE_SIZE } = req.query;
 
-        const clinics = await ClinicModel.find();
+        const query = {
+            ...(name && { name: { $regex: name, $options: 'i' } }),
+            ...(address && { address: { $regex: address, $options: 'i' } }),
+            ...(status && { status: +status }),
+        };
+
+        const page = Math.max(1, Number(_page));
+        const pageSize = Math.max(1, Number(_pageSize));
+        const skip = pageSize * (page - 1);
+
+        const [clinics, totalDocuments] = await Promise.all([
+            ClinicModel.find(query).skip(skip).limit(pageSize),
+            ClinicModel.countDocuments(query),
+        ]);
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get clinic success')
-            .withData(clinics)
+            .withData({
+                items: clinics,
+                meta: { total: totalDocuments, page },
+            })
             .build(res);
     } catch (error) {
         console.log('Error', error);

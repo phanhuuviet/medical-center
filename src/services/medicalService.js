@@ -1,7 +1,7 @@
 import { groupBy } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
-import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM } from '../constants/index.js';
+import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
@@ -13,25 +13,32 @@ import { medicalServiceSchema } from '../schemas/medicalService-schema.js';
 import { getDateFromISOFormat, removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
-// [GET] ${PREFIX_API}/medical-service?clinicId=clinicId&type=type
+// [GET] ${PREFIX_API}/medical-service?clinicId=clinicId&type=type&_page=_page&_pageSize=_pageSize
 export const getAllMedicalService = async (req, res) => {
     try {
-        const { clinicId, type } = req.query;
+        const { clinicId, type, _page = 1, _pageSize = PAGE_SIZE } = req.query;
 
-        const query = {};
-        if (clinicId) {
-            query.clinicId = clinicId;
-        }
-        if (type) {
-            query.type = +type;
-        }
+        const query = {
+            ...(clinicId && { clinicId }),
+            ...(type && { type: +type }),
+        };
 
-        const medicalServices = await MedicalServiceModel.find(query);
+        const page = Math.max(1, Number(_page));
+        const pageSize = Math.max(1, Number(_pageSize));
+        const skip = pageSize * (page - 1);
+
+        const [medicalServices, totalDocuments] = await Promise.all([
+            MedicalServiceModel.find(query).skip(skip).limit(pageSize),
+            MedicalServiceModel.countDocuments(query),
+        ]);
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get all medical services success')
-            .withData(medicalServices)
+            .withData({
+                items: medicalServices,
+                meta: { total: totalDocuments, page },
+            })
             .build(res);
     } catch (error) {
         console.log('Error', error);

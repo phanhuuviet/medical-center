@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { isEmpty, isNil } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
-import { SALT_ROUNDS } from '../constants/index.js';
+import { PAGE_SIZE, SALT_ROUNDS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
@@ -15,27 +15,33 @@ import { checkEmail } from '../utils/validate.js';
 
 import * as doctorWorkingScheduleService from './doctorWorkingScheduleService.js';
 
-// [GET] ${PREFIX_API}/user?role=role&code=code&userName=userName
+// [GET] ${PREFIX_API}/user?role=role&code=code&userName=userName&_page=_page&_pageSize=_pageSize
 export const getAllUsers = async (req, res) => {
     try {
-        const { role, code, userName } = req.query;
-        const query = {};
-        if (role) {
-            query.role = +role;
-        }
-        if (code) {
-            query.code = { $regex: code, $options: 'i' };
-        }
-        if (userName) {
-            query.userName = { $regex: userName, $options: 'i' };
-        }
+        const { role, code, userName, _page = 1, _pageSize = PAGE_SIZE } = req.query;
 
-        const users = await UserModel.find(query);
+        const query = {
+            ...(role && { role: +role }),
+            ...(code && { code: { $regex: code, $options: 'i' } }),
+            ...(userName && { userName: { $regex: userName, $options: 'i' } }),
+        };
+
+        const page = Math.max(1, Number(_page));
+        const pageSize = Math.max(1, Number(_pageSize));
+        const skip = pageSize * (page - 1);
+
+        const [users, totalDocuments] = await Promise.all([
+            UserModel.find(query).skip(skip).limit(pageSize),
+            UserModel.countDocuments(query),
+        ]);
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get all users success')
-            .withData(users)
+            .withData({
+                items: users,
+                meta: { total: totalDocuments, page },
+            })
             .build(res);
     } catch (error) {
         console.log('Error', error);
