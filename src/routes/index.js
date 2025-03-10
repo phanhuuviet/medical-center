@@ -11,9 +11,6 @@ import userRouter from './user-router.js';
 import utilRouter from './util-router.js';
 
 const routes = (app) => {
-    app.use('/', (req, res) => {
-        res.json({ message: 'Welcome to Clinic Management API' });
-    });
     app.use(`${PREFIX_API}/auth`, authRouter);
     app.use(`${PREFIX_API}/util`, utilRouter);
     app.use(`${PREFIX_API}/user`, userRouter);
@@ -23,6 +20,9 @@ const routes = (app) => {
     app.use(`${PREFIX_API}/leave-schedule`, leaveScheduleRouter);
     app.use(`${PREFIX_API}/health-record`, healthRecordRouter);
     app.use(`${PREFIX_API}/medical-consultation-history`, medicalConsultationHistoryRouter);
+    app.use('/', (req, res) => {
+        res.json({ message: 'Welcome to Clinic Management API' });
+    });
 };
 
 export default routes;
