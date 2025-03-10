@@ -2,6 +2,7 @@ import express from 'express';
 
 import * as medicalServiceController from '../controllers/medicalServiceController.js';
 import { authenticateAdmin } from '../middlewares/authMiddleware.js';
+import { uploadImageMiddleware } from '../middlewares/imageMiddleware.js';
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ router.post('/', authenticateAdmin, medicalServiceController.createMedicalServic
 
 // [PUT]
 router.put('/:id/update', authenticateAdmin, medicalServiceController.updateMedicalService);
+router.put('/:id/update-logo', authenticateAdmin, uploadImageMiddleware, medicalServiceController.updateLogo);
 
 // [DELETE]
 router.delete('/:id/delete', authenticateAdmin, medicalServiceController.deleteMedicalService);

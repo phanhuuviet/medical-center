@@ -11,6 +11,7 @@ const MedicalServiceSchema = new mongoose.Schema(
         currentPrice: { type: Number, required: true },
         type: { type: Number, required: true, default: MEDICAL_SERVICE_TYPE_ENUM.SPECIALITY },
         clinicId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Clinic' },
+        logo: { type: String },
     },
     {
         timestamps: true,

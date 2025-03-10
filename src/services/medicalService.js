@@ -266,6 +266,45 @@ export const updateMedicalService = async (req, res) => {
     }
 };
 
+// [PUT] ${PREFIX_API}/medical-service/:id/update-logo
+export const updateLogo = async (req, res) => {
+    try {
+        const file = req.file;
+        const medicalServiceId = req.params.id;
+
+        const updatedMedicalService = await MedicalServiceModel.findByIdAndUpdate(
+            medicalServiceId,
+            {
+                $set: {
+                    logo: file.path,
+                },
+            },
+            {
+                new: true,
+            },
+        );
+
+        if (!updatedMedicalService) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.NOT_FOUND)
+                .withMessage('Medical service is not found')
+                .build(res);
+        }
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Update avatar success')
+            .withData(updatedMedicalService)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
 // [DELETE] ${PREFIX_API}/medical-service/:id
 export const deleteMedicalService = async (req, res) => {
     try {
