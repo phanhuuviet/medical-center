@@ -20,6 +20,7 @@
         "eslint-plugin-prettier": "^5.2.3",
         "eslint-plugin-unused-imports": "^4.1.4",
         "express": "^4.21.2",
+        "http": "^0.0.1-security",
         "husky": "^9.1.7",
         "joi": "^17.13.3",
         "jsonwebtoken": "^9.0.2",
@@ -30,7 +31,8 @@
         "mongoose": "^8.10.1",
         "multer": "^1.4.5-lts.1",
         "multer-storage-cloudinary": "^4.0.0",
-        "nodemon": "^3.1.9"
+        "nodemon": "^3.1.9",
+        "socket.io": "^4.8.1"
     },
     "devDependencies": {
         "eslint": "^9.21.0",

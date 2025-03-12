@@ -35,3 +35,8 @@ export const MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM = {
 };
 
 export const PAGE_SIZE = 10;
+
+export const MESSAGE_TYPE = {
+    TEXT: 1,
+    IMAGE: 2,
+};
