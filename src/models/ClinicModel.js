@@ -10,7 +10,7 @@ const ClinicSchema = new mongoose.Schema(
         address: { type: String, required: true },
         status: { type: Number, default: ACTIVE_STATUS.ACTIVE },
         description: { type: String },
-        logo: { type: String },
+        logo: { type: String, default: null },
     },
     {
         timestamps: true,

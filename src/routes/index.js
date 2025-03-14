@@ -20,9 +20,6 @@ const routes = (app) => {
     app.use(`${PREFIX_API}/leave-schedule`, leaveScheduleRouter);
     app.use(`${PREFIX_API}/health-record`, healthRecordRouter);
     app.use(`${PREFIX_API}/medical-consultation-history`, medicalConsultationHistoryRouter);
-    app.use('/', (req, res) => {
-        res.json({ message: 'Welcome to Clinic Management API' });
-    });
 };
 
 export default routes;

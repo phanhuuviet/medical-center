@@ -7,6 +7,7 @@ import { ResponseCode } from '../constants/response-code.js';
 import UserModel from '../models/UserModel.js';
 import { signInSchema, signUpSchema } from '../schemas/auth-schema.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/generate-jwt.js';
+import { refreshToken as refreshTokenService } from '../utils/generate-jwt.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail } from '../utils/validate.js';
 
@@ -129,6 +130,34 @@ export const signUp = async (req, res) => {
         return new ResponseBuilder()
             .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [POST] ${PREFIX_API}/auth/refresh-token
+export const refreshToken = async (req, res) => {
+    try {
+        const { refresh_token } = req.body;
+
+        if (!refresh_token) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Refresh token is required')
+                .build(res);
+        }
+
+        const new_token = await refreshTokenService(refresh_token); // Await the promise
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage(ErrorMessage.SUCCESS)
+            .withData(new_token)
+            .build(res);
+    } catch (error) {
+        console.error('Error:', error);
+        return new ResponseBuilder()
+            .withCode(error.statusCode || ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(error.message || ErrorMessage.INTERNAL_SERVER_ERROR)
             .build(res);
     }
 };

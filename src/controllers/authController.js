@@ -26,3 +26,15 @@ export const signUp = async (req, res, next) => {
             .build(res);
     }
 };
+
+export const refreshToken = async (req, res, next) => {
+    try {
+        return await authService.refreshToken(req, res, next);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};

@@ -23,31 +23,25 @@ export const generateRefreshToken = (payload) => {
 };
 
 export const refreshToken = (token) => {
-    try {
-        jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, function (err, data) {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, data) => {
             if (err) {
-                return {
+                return reject({
                     statusCode: ResponseCode.UNAUTHORIZED,
                     message: ErrorMessage.UNAUTHORIZED,
-                };
+                });
             }
+
             const access_token = generateAccessToken({
                 id: data?.id,
                 role: data?.role,
             });
-            return {
-                statusCode: ResponseCode.SUCCESS,
-                message: ErrorMessage.SUCCESS,
-                data: {
-                    access_token,
-                },
-            };
+
+            resolve({
+                id: data?.id,
+                access_token,
+                refresh_token: token,
+            });
         });
-    } catch (err) {
-        console.log(err);
-        return {
-            statusCode: ResponseCode.INTERNAL_SERVER_ERROR,
-            message: ErrorMessage.INTERNAL_SERVER_ERROR,
-        };
-    }
+    });
 };
