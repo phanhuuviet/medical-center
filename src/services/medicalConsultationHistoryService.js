@@ -42,7 +42,11 @@ export const getAllMedicalConsultationHistory = async (req, res) => {
         const skip = pageSize * (page - 1);
 
         const [medicalConsultationHistories, totalDocuments] = await Promise.all([
-            MedicalConsultationHistoryModel.find(query).skip(skip).limit(pageSize),
+            MedicalConsultationHistoryModel.find(query)
+                .skip(skip)
+                .limit(pageSize)
+                .populate('clinic')
+                .populate('clinicSchedule'),
             MedicalConsultationHistoryModel.countDocuments(query),
         ]);
         return new ResponseBuilder()
