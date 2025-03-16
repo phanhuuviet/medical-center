@@ -72,7 +72,9 @@ export const getMedicalConsultationHistoryById = async (req, res) => {
         const medicalConsultationHistoryId = req.params.id;
         const checkMedicalConsultationHistory = await MedicalConsultationHistoryModel.findOne({
             _id: medicalConsultationHistoryId,
-        });
+        })
+            .populate('clinic')
+            .populate('clinicSchedule');
 
         if (!checkMedicalConsultationHistory) {
             return new ResponseBuilder()
