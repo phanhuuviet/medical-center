@@ -3,6 +3,7 @@ import { PREFIX_API } from '../constants/index.js';
 import authRouter from './auth-router.js';
 import clinicRouter from './clinic-router.js';
 import clinicScheduleRouter from './clinic-schedule-router.js';
+import dashboardRouter from './dashboard-router.js';
 import healthRecordRouter from './health-record-router.js';
 import leaveScheduleRouter from './leave-schedule-router.js';
 import medicalConsultationHistoryRouter from './medical-consultation-history-router.js';
@@ -20,6 +21,7 @@ const routes = (app) => {
     app.use(`${PREFIX_API}/leave-schedule`, leaveScheduleRouter);
     app.use(`${PREFIX_API}/health-record`, healthRecordRouter);
     app.use(`${PREFIX_API}/medical-consultation-history`, medicalConsultationHistoryRouter);
+    app.use(`${PREFIX_API}/dashboard`, dashboardRouter);
 };
 
 export default routes;

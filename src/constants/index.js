@@ -35,3 +35,7 @@ export const MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM = {
 };
 
 export const PAGE_SIZE = 10;
+
+export const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+export const MONTHS_STRING = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
