@@ -1,3 +1,4 @@
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
@@ -7,6 +8,15 @@ import { connectDb } from './utils/connectDb.js';
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
+
+// CORS
+app.use(cors());
+app.use((req, res, next) => {
+    res.header(`Access-Control-Allow-Origin`, `*`);
+    res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
+    res.header(`Access-Control-Allow-Headers`, `Content-Type`);
+    next();
+});
 
 //  Middleware
 app.use(express.json());
