@@ -36,6 +36,7 @@ const MedicalConsultationHistorySchema = new mongoose.Schema(
         patientDateOfBirth: { type: Date, required: true },
         patientProvince: { type: String, required: true },
         patientDistrict: { type: String, required: true },
+        patientCommune: { type: String, required: true },
         patientAddress: { type: String, required: true },
     },
     {

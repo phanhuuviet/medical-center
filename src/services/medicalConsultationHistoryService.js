@@ -2,7 +2,10 @@ import ErrorMessage from '../constants/error-message.js';
 import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
-import { medicalConsultationHistorySchema } from '../schemas/medicalConsultationHistory-schema.js';
+import {
+    medicalConsultationHistorySchema,
+    medicalConsultationHistoryUpdateSchema,
+} from '../schemas/medicalConsultationHistory-schema.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
 // [GET] ${PREFIX_API}/medical-consultation-history?patientId=patientId
@@ -117,6 +120,7 @@ export const createMedicalConsultationHistory = async (req, res) => {
             patientDateOfBirth,
             patientProvince,
             patientDistrict,
+            patientCommune,
             patientAddress,
         } = req.body;
 
@@ -136,6 +140,7 @@ export const createMedicalConsultationHistory = async (req, res) => {
             patientDateOfBirth,
             patientProvince,
             patientDistrict,
+            patientCommune,
             patientAddress,
         });
         const messageError = error?.details[0].message;
@@ -161,6 +166,7 @@ export const createMedicalConsultationHistory = async (req, res) => {
             patientDateOfBirth,
             patientProvince,
             patientDistrict,
+            patientCommune,
             patientAddress,
         });
 
@@ -208,7 +214,7 @@ export const updateMedicalConsultationHistory = async (req, res) => {
             patientAddress,
         } = req.body;
 
-        const { error } = medicalConsultationHistorySchema.validate({
+        const { error } = medicalConsultationHistoryUpdateSchema.validate({
             patientId,
             clinicId,
             examinationDate,

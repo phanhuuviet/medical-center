@@ -40,4 +40,8 @@ export const signUpSchema = Joi.object({
         'string.empty': 'District is not allowed to be empty',
         'any.required': 'District is required',
     }),
+    commune: Joi.string().required().messages({
+        'string.empty': 'Commune is not allowed to be empty',
+        'any.required': 'Commune is required',
+    }),
 });

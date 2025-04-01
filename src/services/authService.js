@@ -76,7 +76,15 @@ export const signIn = async (req, res) => {
 // [POST] ${PREFIX_API}/auth/sign-up
 export const signUp = async (req, res) => {
     try {
-        const { userName, email, password, dateOfBirth, gender, province, district, address } = req.body;
+        const { userName, email, password, dateOfBirth, gender, province, district, commune, address } = req.body;
+
+        const checkUser = await UserModel.findOne({ email });
+        if (!isNil(checkUser)) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Email is already taken')
+                .build(res);
+        }
 
         const { error } = signUpSchema.validate({
             userName,
@@ -86,6 +94,7 @@ export const signUp = async (req, res) => {
             gender,
             province,
             district,
+            commune,
         });
         const messageError = error?.details[0].message;
 
@@ -94,14 +103,6 @@ export const signUp = async (req, res) => {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         } else if (!checkEmail(email)) {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage('Email is invalid').build(res);
-        }
-
-        const checkUser = await UserModel.findOne({ email });
-        if (!isNil(checkUser)) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage('Email is already taken')
-                .build(res);
         }
 
         const hashPassword = bcrypt.hashSync(password, SALT_ROUNDS);
@@ -115,6 +116,7 @@ export const signUp = async (req, res) => {
             province,
             district,
             address,
+            commune,
         });
 
         // Create health record for new user

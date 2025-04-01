@@ -13,6 +13,7 @@ const UserSchema = new mongoose.Schema(
         gender: { type: Number, required: true, default: GENDER_ENUM.MALE },
         province: { type: String, required: true },
         district: { type: String, required: true },
+        commune: { type: String, required: true },
         address: { type: String },
         avatar: { type: String },
         phoneNumber: { type: String },

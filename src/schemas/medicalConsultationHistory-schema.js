@@ -67,8 +67,69 @@ export const medicalConsultationHistorySchema = Joi.object({
         'string.empty': 'Patient district is not allowed to be empty',
         'any.required': 'Patient district is required',
     }),
+    patientCommune: Joi.string().required().messages({
+        'string.empty': 'Patient commune is not allowed to be empty',
+        'any.required': 'Patient commune is required',
+    }),
     patientAddress: Joi.string().required().messages({
         'string.empty': 'Patient address is not allowed to be empty',
         'any.required': 'Patient address is required',
+    }),
+});
+
+export const medicalConsultationHistoryUpdateSchema = Joi.object({
+    patientId: Joi.string().messages({
+        'string.base': 'patientId must be a string',
+        'string.empty': 'patientId is not allowed to be empty',
+    }),
+    clinicId: Joi.string().messages({
+        'string.base': 'clinicId must be a string',
+        'string.empty': 'clinicId is not allowed to be empty',
+    }),
+    examinationDate: Joi.date().messages({
+        'date.empty': 'Examination date is not allowed to be empty',
+    }),
+    clinicScheduleId: Joi.string().messages({
+        'string.base': 'clinicScheduleId must be a string',
+        'string.empty': 'clinicScheduleId is not allowed to be empty',
+    }),
+    examinationReason: Joi.string().messages({
+        'string.empty': 'Examination reason is not allowed to be empty',
+    }),
+    medicalFee: Joi.number().messages({
+        'number.base': 'Medical fee must be a number',
+        'number.empty': 'Medical fee is not allowed to be empty',
+    }),
+    medicalServiceName: Joi.string().messages({
+        'string.empty': 'Medical service name is not allowed to be empty',
+    }),
+    paymentMethod: Joi.number().messages({
+        'number.base': 'Payment method must be a number',
+        'number.empty': 'Payment method is not allowed to be empty',
+    }),
+    patientName: Joi.string().messages({
+        'string.empty': 'Patient name is not allowed to be empty',
+    }),
+    patientGender: Joi.number().messages({
+        'number.base': 'Patient gender must be a number',
+        'number.empty': 'Patient gender is not allowed to be empty',
+    }),
+    patientPhoneNumber: Joi.string().messages({
+        'string.empty': 'Patient phone number is not allowed to be empty',
+    }),
+    patientEmail: Joi.string().messages({
+        'string.empty': 'Patient email is not allowed to be empty',
+    }),
+    patientDateOfBirth: Joi.date().messages({
+        'date.empty': 'Patient date of birth is not allowed to be empty',
+    }),
+    patientProvince: Joi.string().messages({
+        'string.empty': 'Patient province is not allowed to be empty',
+    }),
+    patientDistrict: Joi.string().messages({
+        'string.empty': 'Patient district is not allowed to be empty',
+    }),
+    patientAddress: Joi.string().messages({
+        'string.empty': 'Patient address is not allowed to be empty',
     }),
 });
