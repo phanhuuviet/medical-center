@@ -16,7 +16,7 @@ router.get('/me', authenticateToken, userController.getMe);
 router.get('/:id', userController.getUserById);
 
 // [PUT]
-router.put('/:id/update', authenticateSelfUserOrAdminMiddleware, userController.updateUser);
+router.put('/:id/update', authenticateToken, userController.updateUser);
 router.put(
     '/:id/update-avatar',
     authenticateSelfUserOrAdminMiddleware,

@@ -104,7 +104,17 @@ export const getUserById = async (req, res) => {
 export const updateUser = async (req, res) => {
     try {
         const userId = req.params.id;
+        const role = req.role;
+        const currentUserId = req.userId;
         const { userName, dateOfBirth, gender, province, district, address, phoneNumber } = req.body;
+
+        // Check if the user is trying to update their own information or an admin/doctor is updating another user's information
+        if (userId !== currentUserId && role !== USER_ROLE.ADMIN && role !== USER_ROLE.DOCTOR) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.FORBIDDEN)
+                .withMessage(ErrorMessage.FORBIDDEN)
+                .build(res);
+        }
 
         const updatedData = {
             userName,
@@ -236,17 +246,30 @@ export const getDoctorSchedules = async (req, res) => {
     }
 };
 
-// [GET] ${PREFIX_API}/user/:doctorId/patients
+// [GET] ${PREFIX_API}/user/:doctorId/patients?isGetAll=true&_page=_page&_pageSize=_pageSize&userName=userName
 export const getAllPatientsByDoctor = async (req, res) => {
     try {
         const doctorId = req.params.doctorId;
+        const { isGetAll, userName, _page = 1, _pageSize = PAGE_SIZE } = req.query;
+
+        const page = Math.max(1, Number(_page));
+        const pageSize = Math.max(1, Number(_pageSize));
+        const skip = pageSize * (page - 1);
+
+        const query = {
+            ...(userName && { userName: { $regex: userName, $options: 'i' } }),
+            ...(!isGetAll && { responsibilityDoctorId: doctorId }),
+        };
 
         const checkDoctor = await DoctorModel.findOne({ _id: doctorId });
         if (isNil(checkDoctor)) {
             return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Doctor is not found').build(res);
         }
 
-        const patients = await MedicalConsultationHistoryModel.find({ responsibilityDoctorId: doctorId });
+        const [patients, totalDocuments] = await Promise.all([
+            MedicalConsultationHistoryModel.find(query).skip(skip).limit(pageSize),
+            MedicalConsultationHistoryModel.countDocuments(query),
+        ]);
         const patientIds = patients.map((patient) => patient.patientId);
 
         const allPatients = await UserModel.find({ _id: { $in: patientIds } });
@@ -254,7 +277,10 @@ export const getAllPatientsByDoctor = async (req, res) => {
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get doctor patients success')
-            .withData(allPatients)
+            .withData({
+                items: allPatients,
+                meta: { total: totalDocuments, page: _page },
+            })
             .build(res);
     } catch (error) {
         console.log('Error', error);
