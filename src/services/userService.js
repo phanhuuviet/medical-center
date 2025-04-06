@@ -246,11 +246,11 @@ export const getDoctorSchedules = async (req, res) => {
     }
 };
 
-// [GET] ${PREFIX_API}/user/:doctorId/patients?isGetAll=true&_page=_page&_pageSize=_pageSize&userName=userName
+// [GET] ${PREFIX_API}/user/:doctorId/patients?isGetAllPatient=true&_page=_page&_pageSize=_pageSize&userName=userName
 export const getAllPatientsByDoctor = async (req, res) => {
     try {
         const doctorId = req.params.doctorId;
-        const { isGetAll, userName, _page = 1, _pageSize = PAGE_SIZE } = req.query;
+        const { isGetAllPatient, userName, _page = 1, _pageSize = PAGE_SIZE } = req.query;
 
         const page = Math.max(1, Number(_page));
         const pageSize = Math.max(1, Number(_pageSize));
@@ -258,7 +258,7 @@ export const getAllPatientsByDoctor = async (req, res) => {
 
         const query = {
             ...(userName && { userName: { $regex: userName, $options: 'i' } }),
-            ...(!isGetAll && { responsibilityDoctorId: doctorId }),
+            ...(!isGetAllPatient && { responsibilityDoctorId: doctorId }),
         };
 
         const checkDoctor = await DoctorModel.findOne({ _id: doctorId });
