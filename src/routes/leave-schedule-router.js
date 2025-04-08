@@ -8,6 +8,10 @@ const router = express.Router();
 // [GET]
 router.get('/:doctorId', authenticateSelfUserOrAdminMiddleware, leaveScheduleController.getLeaveScheduleByDoctorId);
 
+// [PUT]
+router.put('/:id/active', authenticateToken, leaveScheduleController.activeLeaveSchedule);
+router.put('/:id/inactive', authenticateToken, leaveScheduleController.inactiveLeaveSchedule);
+
 // [POST]
 router.post('/', authenticateSelfUserOrAdminMiddleware, leaveScheduleController.createLeaveSchedule);
 

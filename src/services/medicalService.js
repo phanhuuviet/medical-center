@@ -1,7 +1,7 @@
 import { groupBy } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
-import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
+import { ACTIVE_STATUS, MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
@@ -110,6 +110,7 @@ export const getMedicalServiceSchedules = async (req, res) => {
             LeaveScheduleModel.find({
                 doctorId: { $in: allDoctorIds },
                 date: getDateFromISOFormat(date),
+                status: ACTIVE_STATUS.ACTIVE,
             }).populate('clinicSchedule'),
 
             MedicalConsultationHistoryModel.find({

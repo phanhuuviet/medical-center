@@ -15,6 +15,30 @@ export const getLeaveScheduleByDoctorId = async (req, res) => {
     }
 };
 
+export const activeLeaveSchedule = async (req, res) => {
+    try {
+        return await leaveScheduleService.activeLeaveSchedule(req, res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+export const inactiveLeaveSchedule = async (req, res) => {
+    try {
+        return await leaveScheduleService.inactiveLeaveSchedule(req, res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
 export const createLeaveSchedule = async (req, res) => {
     try {
         return await leaveScheduleService.createLeaveSchedule(req, res);

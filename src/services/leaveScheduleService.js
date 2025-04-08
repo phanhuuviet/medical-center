@@ -1,4 +1,5 @@
 import ErrorMessage from '../constants/error-message.js';
+import { ACTIVE_STATUS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import LeaveScheduleModel from '../models/LeaveScheduleModel.js';
@@ -55,6 +56,102 @@ export const createLeaveSchedule = async (req, res) => {
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Create leave schedule success')
             .withData(newLeaveSchedule)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [PUT] ${PREFIX_API}/leave-schedule/:id/active
+export const activeLeaveSchedule = async (req, res) => {
+    try {
+        const leaveScheduleId = req.params.id;
+        const doctorId = req.userId;
+        const role = req.role;
+
+        const checkLeaveSchedule = await LeaveScheduleModel.findOne({ _id: leaveScheduleId });
+
+        // Check leave schedule is existed
+        if (!checkLeaveSchedule) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.NOT_FOUND)
+                .withMessage('Leave schedule is not found')
+                .build(res);
+        }
+
+        // Check doctorId is match
+        if (!(role === USER_ROLE.ADMIN || doctorId === checkLeaveSchedule.doctorId)) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.FORBIDDEN)
+                .withMessage(ErrorMessage.FORBIDDEN)
+                .build(res);
+        }
+
+        // Check leave schedule is active
+        if (checkLeaveSchedule.status === ACTIVE_STATUS.ACTIVE) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Leave schedule is already active')
+                .build(res);
+        }
+
+        await LeaveScheduleModel.updateOne({ _id: leaveScheduleId }, { status: ACTIVE_STATUS.ACTIVE });
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Active leave schedule success')
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [PUT] ${PREFIX_API}/leave-schedule/:id/inactive
+export const inactiveLeaveSchedule = async (req, res) => {
+    try {
+        const leaveScheduleId = req.params.id;
+        const doctorId = req.userId;
+        const role = req.role;
+
+        const checkLeaveSchedule = await LeaveScheduleModel.findOne({ _id: leaveScheduleId });
+
+        // Check leave schedule is existed
+        if (!checkLeaveSchedule) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.NOT_FOUND)
+                .withMessage('Leave schedule is not found')
+                .build(res);
+        }
+
+        // Check doctorId is match
+        if (!(role === USER_ROLE.ADMIN || doctorId === checkLeaveSchedule.doctorId)) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.FORBIDDEN)
+                .withMessage(ErrorMessage.FORBIDDEN)
+                .build(res);
+        }
+
+        // Check leave schedule is inactive
+        if (checkLeaveSchedule.status === ACTIVE_STATUS.INACTIVE) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Leave schedule is already inactive')
+                .build(res);
+        }
+
+        await LeaveScheduleModel.updateOne({ _id: leaveScheduleId }, { status: ACTIVE_STATUS.INACTIVE });
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Inactive leave schedule success')
             .build(res);
     } catch (error) {
         console.log('Error', error);

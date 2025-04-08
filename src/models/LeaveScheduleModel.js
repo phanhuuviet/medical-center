@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
 
+import { ACTIVE_STATUS } from '../constants/index.js';
+
 const LeaveScheduleSchema = new mongoose.Schema(
     {
         clinicScheduleId: { type: mongoose.Schema.Types.ObjectId, ref: 'ClinicSchedule', required: true },
         doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         date: { type: String, required: true },
         reason: { type: String },
+        status: { type: Number, default: ACTIVE_STATUS.ACTIVE, enum: [ACTIVE_STATUS.ACTIVE, ACTIVE_STATUS.INACTIVE] },
     },
     {
         timestamps: true,
