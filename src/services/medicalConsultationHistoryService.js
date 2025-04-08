@@ -334,6 +334,59 @@ export const cancelMedicalConsultationHistory = async (req, res) => {
 export const completeMedicalConsultationHistory = async (req, res) => {
     try {
         const medicalConsultationHistoryId = req.params.id;
+        const {
+            patientId,
+            clinicId,
+            responsibilityDoctorId,
+            examinationDate,
+            clinicScheduleId,
+            examinationReason,
+            patientStatus,
+            diagnosis,
+            reExaminateDate,
+            noteFromDoctor,
+            medicalFee,
+            medicalServiceName,
+            paymentMethod,
+            paymentStatus,
+            patientName,
+            patientGender,
+            patientPhoneNumber,
+            patientEmail,
+            patientDateOfBirth,
+            patientProvince,
+            patientDistrict,
+            patientAddress,
+        } = req.body;
+
+        const { error } = medicalConsultationHistoryUpdateSchema.validate({
+            patientId,
+            clinicId,
+            examinationDate,
+            clinicScheduleId,
+            examinationReason,
+            medicalFee,
+            medicalServiceName,
+            paymentMethod,
+            patientName,
+            patientGender,
+            patientPhoneNumber,
+            patientEmail,
+            patientDateOfBirth,
+            patientProvince,
+            patientDistrict,
+            patientAddress,
+            responsibilityDoctorId,
+            patientStatus,
+            diagnosis,
+            reExaminateDate,
+        });
+        const messageError = error?.details[0].message;
+
+        if (messageError) {
+            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
+        }
+
         const checkMedicalConsultationHistory = await MedicalConsultationHistoryModel.findOne({
             _id: medicalConsultationHistoryId,
         });
@@ -347,7 +400,31 @@ export const completeMedicalConsultationHistory = async (req, res) => {
 
         const response = await MedicalConsultationHistoryModel.findOneAndUpdate(
             { _id: medicalConsultationHistoryId },
-            { status: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE },
+            {
+                status: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE,
+                patientId,
+                clinicId,
+                responsibilityDoctorId,
+                examinationDate,
+                clinicScheduleId,
+                examinationReason,
+                patientStatus,
+                diagnosis,
+                reExaminateDate,
+                noteFromDoctor,
+                medicalFee,
+                medicalServiceName,
+                paymentMethod,
+                paymentStatus,
+                patientName,
+                patientGender,
+                patientPhoneNumber,
+                patientEmail,
+                patientDateOfBirth,
+                patientProvince,
+                patientDistrict,
+                patientAddress,
+            },
             {
                 new: true,
             },

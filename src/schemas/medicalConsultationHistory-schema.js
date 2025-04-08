@@ -132,4 +132,23 @@ export const medicalConsultationHistoryUpdateSchema = Joi.object({
     patientAddress: Joi.string().messages({
         'string.empty': 'Patient address is not allowed to be empty',
     }),
+    responsibilityDoctorId: Joi.string().messages({
+        'string.base': 'Responsibility doctor ID must be a string',
+        'string.empty': 'Responsibility doctor ID is not allowed to be empty',
+        'any.required': 'Responsibility doctor ID is required',
+    }),
+    patientStatus: Joi.string().messages({
+        'string.base': 'Patient status must be a string',
+        'string.empty': 'Patient status is not allowed to be empty',
+        'any.required': 'Patient status is required',
+    }),
+    diagnosis: Joi.string().messages({
+        'string.base': 'Diagnosis must be a string',
+        'string.empty': 'Diagnosis is not allowed to be empty',
+        'any.required': 'Diagnosis is required',
+    }),
+    reExaminateDate: Joi.date().messages({
+        'date.empty': 'Re-examination date is not allowed to be empty',
+        'any.required': 'Re-examination date is required',
+    }),
 });
