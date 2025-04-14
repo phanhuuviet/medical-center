@@ -13,7 +13,7 @@ router.put('/:id/active', authenticateToken, leaveScheduleController.activeLeave
 router.put('/:id/inactive', authenticateToken, leaveScheduleController.inactiveLeaveSchedule);
 
 // [POST]
-router.post('/', authenticateSelfUserOrAdminMiddleware, leaveScheduleController.createLeaveSchedule);
+router.post('/', authenticateToken, leaveScheduleController.createLeaveSchedule);
 
 // [DELETE]
 router.delete('/:id', authenticateToken, leaveScheduleController.deleteLeaveSchedule);

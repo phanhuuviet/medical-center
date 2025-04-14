@@ -10,7 +10,7 @@ router.get('/', authenticateToken, medicalConsultationHistoryController.getAllMe
 router.get('/:id', authenticateToken, medicalConsultationHistoryController.getMedicalConsultationHistoryById);
 
 // [POST]
-router.post('/', authenticateAdmin, medicalConsultationHistoryController.createMedicalConsultationHistory);
+router.post('/', authenticateToken, medicalConsultationHistoryController.createMedicalConsultationHistory);
 
 // [PUT]
 router.put('/:id/update', authenticateToken, medicalConsultationHistoryController.updateMedicalConsultationHistory);
