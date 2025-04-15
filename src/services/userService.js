@@ -106,7 +106,7 @@ export const updateUser = async (req, res) => {
         const userId = req.params.id;
         const role = req.role;
         const currentUserId = req.userId;
-        const { userName, dateOfBirth, gender, province, district, address, phoneNumber } = req.body;
+        const { userName, dateOfBirth, gender, province, district, address, commune, phoneNumber } = req.body;
 
         // Check if the user is trying to update their own information or an admin/doctor is updating another user's information
         if (userId !== currentUserId && role !== USER_ROLE.ADMIN && role !== USER_ROLE.DOCTOR) {
@@ -122,6 +122,7 @@ export const updateUser = async (req, res) => {
             gender,
             province,
             district,
+            commune,
             address,
             phoneNumber,
         };
@@ -261,25 +262,29 @@ export const getAllPatientsByDoctor = async (req, res) => {
             ...(!isGetAllPatient && { responsibilityDoctorId: doctorId }),
         };
 
-        const checkDoctor = await DoctorModel.findOne({ _id: doctorId });
-        if (isNil(checkDoctor)) {
+        const checkDoctor = await DoctorModel.findById(doctorId);
+        if (!checkDoctor) {
             return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Doctor is not found').build(res);
         }
 
-        const [patients, totalDocuments] = await Promise.all([
-            MedicalConsultationHistoryModel.find(query).skip(skip).limit(pageSize),
-            MedicalConsultationHistoryModel.countDocuments(query),
-        ]);
-        const patientIds = patients.map((patient) => patient.patientId);
+        // Lấy tất cả patientId duy nhất theo query
+        const uniquePatientIds = await MedicalConsultationHistoryModel.distinct('patientId', query);
 
-        const allPatients = await UserModel.find({ _id: { $in: patientIds } });
+        // Tổng số bệnh nhân duy nhất
+        const totalDocuments = uniquePatientIds.length;
+
+        // Phân trang danh sách patientId
+        const paginatedPatientIds = uniquePatientIds.slice(skip, skip + pageSize);
+
+        // Lấy thông tin bệnh nhân
+        const allPatients = await UserModel.find({ _id: { $in: paginatedPatientIds } });
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get doctor patients success')
             .withData({
                 items: allPatients,
-                meta: { total: totalDocuments, page: _page },
+                meta: { total: totalDocuments, page },
             })
             .build(res);
     } catch (error) {

@@ -310,7 +310,7 @@ export const cancelMedicalConsultationHistory = async (req, res) => {
 
         const response = await MedicalConsultationHistoryModel.findOneAndUpdate(
             { _id: medicalConsultationHistoryId },
-            { status: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCEL },
+            { status: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED },
             {
                 new: true,
             },
