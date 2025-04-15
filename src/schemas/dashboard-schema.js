@@ -7,6 +7,9 @@ export const dashboardSchema = Joi.object({
     month: Joi.number().messages({
         'number.base': 'Month must be a number',
     }),
+    clinicId: Joi.string().messages({
+        'string.base': 'Clinic ID must be a string',
+    }),
 }).when(Joi.object({ month: Joi.exist() }).unknown(), {
     then: Joi.object({
         year: Joi.required().messages({

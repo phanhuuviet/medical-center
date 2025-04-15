@@ -38,3 +38,15 @@ export const getPatientDashboard = async (req, res) => {
             .build(res);
     }
 };
+
+export const getRevenueDashboard = async (req, res) => {
+    try {
+        return await dashboardService.getRevenueDashboard(req, res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};

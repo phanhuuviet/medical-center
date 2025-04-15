@@ -9,5 +9,6 @@ const router = express.Router();
 router.get('/medical-consultation-history', authenticateAdmin, dashboardController.getMedicalConsultationHistory);
 router.get('/doctor', authenticateAdmin, dashboardController.getDoctorDashboard);
 router.get('/patient', authenticateAdmin, dashboardController.getPatientDashboard);
+router.get('/revenue', authenticateAdmin, dashboardController.getRevenueDashboard);
 
 export default router;

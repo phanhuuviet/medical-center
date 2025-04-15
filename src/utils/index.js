@@ -39,7 +39,7 @@ export const getDaysInMonth = (month, year) => {
     return days;
 };
 
-export const calculateTotalBykeyGroupByDays = (data, month, year, key) => {
+export const calculateNumberBykeyGroupByDays = (data, month, year, key) => {
     if (!isArray(data) || !month || !year || !key) {
         return [];
     }
@@ -57,7 +57,7 @@ export const calculateTotalBykeyGroupByDays = (data, month, year, key) => {
     });
 };
 
-export const calculateTotalByKeyGroupByMonth = (data, key) => {
+export const calculateNumberByKeyGroupByMonth = (data, key) => {
     if (!isArray(data) || !key) {
         return [];
     }
@@ -74,7 +74,7 @@ export const calculateTotalByKeyGroupByMonth = (data, key) => {
     });
 };
 
-export const calculateTotalByKeyGroupByYear = (data, key, startYear, endYear) => {
+export const calculateNumberByKeyGroupByYear = (data, key, startYear, endYear) => {
     if (!isArray(data) || !key || !startYear || !endYear) {
         return [];
     }
@@ -84,6 +84,60 @@ export const calculateTotalByKeyGroupByYear = (data, key, startYear, endYear) =>
     const years = [];
     for (let year = startYear; year <= endYear; year++) {
         const total = groupByYear[year] ? groupByYear[year].length : 0;
+        years.push({
+            year,
+            total,
+        });
+    }
+
+    return years;
+};
+
+export const calculateRevenueBykeyGroupByDays = (data, month, year, key) => {
+    if (!isArray(data) || !month || !year || !key) {
+        return [];
+    }
+
+    const daysInMonth = getDaysInMonth(month - 1, year);
+
+    const groupByDay = groupBy(data, (record) => record?.[key].getDate());
+
+    return daysInMonth.map((day) => {
+        const total = groupByDay[day] ? groupByDay[day].reduce((acc, record) => acc + record.medicalFee, 0) : 0;
+        return {
+            day,
+            total,
+        };
+    });
+};
+
+export const calculateRevenueByKeyGroupByMonth = (data, key) => {
+    if (!isArray(data) || !key) {
+        return [];
+    }
+
+    const groupByMonth = groupBy(data, (record) => record?.[key].getMonth() + 1);
+
+    return MONTHS_STRING.map((month) => {
+        const total = groupByMonth[month] ? groupByMonth[month].reduce((acc, record) => acc + record.medicalFee, 0) : 0;
+
+        return {
+            month,
+            total,
+        };
+    });
+};
+
+export const calculateRevenueByKeyGroupByYear = (data, key, startYear, endYear) => {
+    if (!isArray(data) || !key || !startYear || !endYear) {
+        return [];
+    }
+
+    const groupByYear = groupBy(data, (record) => record?.[key].getFullYear());
+
+    const years = [];
+    for (let year = startYear; year <= endYear; year++) {
+        const total = groupByYear[year] ? groupByYear[year].reduce((acc, record) => acc + record.medicalFee, 0) : 0;
         years.push({
             year,
             total,
