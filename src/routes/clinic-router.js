@@ -9,6 +9,7 @@ const router = express.Router();
 // [GET]
 router.get('/', clinicController.getAllClinic);
 router.get('/:id', clinicController.getClinicById);
+router.get('/:id/doctors', clinicController.getDoctorByClinicId);
 
 // [POST]
 router.post('/', authenticateAdmin, clinicController.createClinic);

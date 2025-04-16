@@ -1,6 +1,11 @@
 import Joi from 'joi';
 
 export const medicalConsultationHistorySchema = Joi.object({
+    responsibilityDoctorId: Joi.string().required().messages({
+        'string.base': 'responsibilityDoctorId must be a string',
+        'string.empty': 'responsibilityDoctorId is not allowed to be empty',
+        'any.required': 'responsibilityDoctorId is required',
+    }),
     patientId: Joi.string().required().messages({
         'string.base': 'patientId must be a string',
         'string.empty': 'patientId is not allowed to be empty',

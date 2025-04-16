@@ -4,6 +4,7 @@ import ErrorMessage from '../constants/error-message.js';
 import { ACTIVE_STATUS, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import ClinicModel from '../models/ClinicModel.js';
+import { DoctorModel } from '../models/UserModel.js';
 import { clinicSchema } from '../schemas/clinic-schema.js';
 import { removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
@@ -60,6 +61,31 @@ export const getClinicById = async (req, res) => {
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get clinic success')
             .withData(checkClinic)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [GET] ${PREFIX_API}/:id/doctor
+export const getDoctorByClinicId = async (req, res) => {
+    try {
+        const clinicId = req.params.id;
+        const checkClinic = await ClinicModel.findOne({ _id: clinicId });
+        if (isNil(checkClinic)) {
+            return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Clinic is not found').build(res);
+        }
+
+        const doctors = await DoctorModel.find({ clinicId });
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Get doctor success')
+            .withData(doctors)
             .build(res);
     } catch (error) {
         console.log('Error', error);

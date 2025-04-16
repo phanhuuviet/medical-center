@@ -104,6 +104,7 @@ export const getMedicalConsultationHistoryById = async (req, res) => {
 export const createMedicalConsultationHistory = async (req, res) => {
     try {
         const {
+            responsibilityDoctorId,
             patientId,
             clinicId,
             examinationDate,
@@ -125,6 +126,7 @@ export const createMedicalConsultationHistory = async (req, res) => {
         } = req.body;
 
         const { error } = medicalConsultationHistorySchema.validate({
+            responsibilityDoctorId,
             patientId,
             clinicId,
             examinationDate,
@@ -150,6 +152,7 @@ export const createMedicalConsultationHistory = async (req, res) => {
         }
 
         const medicalConsultationHistory = new MedicalConsultationHistoryModel({
+            responsibilityDoctorId,
             patientId,
             clinicId,
             examinationDate,
