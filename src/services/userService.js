@@ -257,15 +257,36 @@ export const getAllPatientsByDoctor = async (req, res) => {
         const pageSize = Math.max(1, Number(_pageSize));
         const skip = pageSize * (page - 1);
 
-        const query = {
-            ...(userName && { userName: { $regex: userName, $options: 'i' } }),
-            ...(!isGetAllPatient && { responsibilityDoctorId: doctorId }),
-        };
+        if (isGetAllPatient) {
+            const query = {
+                ...(userName && { userName: { $regex: userName, $options: 'i' } }),
+                role: USER_ROLE.USER,
+            };
+
+            const [patients, totalDocuments] = await Promise.all([
+                UserModel.find(query).skip(skip).limit(pageSize),
+                UserModel.countDocuments(query),
+            ]);
+
+            return new ResponseBuilder()
+                .withCode(ResponseCode.SUCCESS)
+                .withMessage('Get all patients success')
+                .withData({
+                    items: patients,
+                    meta: { total: totalDocuments, page },
+                })
+                .build(res);
+        }
 
         const checkDoctor = await DoctorModel.findById(doctorId);
         if (!checkDoctor) {
             return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Doctor is not found').build(res);
         }
+
+        const query = {
+            ...(userName && { userName: { $regex: userName, $options: 'i' } }),
+            responsibilityDoctorId: doctorId,
+        };
 
         // Lấy tất cả patientId duy nhất theo query
         const uniquePatientIds = await MedicalConsultationHistoryModel.distinct('patientId', query);
@@ -308,6 +329,7 @@ export const createDoctor = async (req, res) => {
             province,
             district,
             address,
+            commune,
             clinicId,
             medicalServiceId,
             specialty,
@@ -323,6 +345,7 @@ export const createDoctor = async (req, res) => {
             gender,
             province,
             district,
+            commune,
             clinicId,
             specialty,
             qualification,
@@ -355,6 +378,7 @@ export const createDoctor = async (req, res) => {
             province,
             district,
             address,
+            commune,
             clinicId,
             medicalServiceId,
             specialty,

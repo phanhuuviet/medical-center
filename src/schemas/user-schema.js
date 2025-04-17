@@ -29,6 +29,10 @@ export const doctorSchema = Joi.object({
         'string.empty': 'District is not allowed to be empty',
         'any.required': 'District is required',
     }),
+    commune: Joi.string().required().messages({
+        'string.empty': 'Commune is not allowed to be empty',
+        'any.required': 'Commune is required',
+    }),
     clinicId: Joi.string().required().messages({
         'string.base': 'clinicId must be a string',
         'string.empty': 'clinicId is not allowed to be empty',
