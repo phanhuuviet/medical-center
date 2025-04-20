@@ -412,3 +412,80 @@ export const createDoctor = async (req, res) => {
             .build(res);
     }
 };
+
+// [PUT] ${PREFIX_API}/user/:doctorId/update-doctor
+export const updateDoctor = async (req, res) => {
+    try {
+        const doctorId = req.params.doctorId;
+        const role = req.role;
+        const currentUserId = req.userId;
+        const {
+            userName,
+            dateOfBirth,
+            gender,
+            province,
+            district,
+            address,
+            commune,
+            phoneNumber,
+            medicalServiceId,
+            clinicId,
+            specialty,
+            qualification,
+            description,
+        } = req.body;
+
+        // Check if the user is trying to update their own information or an admin/doctor is updating another user's information
+        if (doctorId !== currentUserId && role !== USER_ROLE.ADMIN && role !== USER_ROLE.DOCTOR) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.FORBIDDEN)
+                .withMessage(ErrorMessage.FORBIDDEN)
+                .build(res);
+        }
+
+        const updatedData = {
+            userName,
+            dateOfBirth,
+            gender,
+            province,
+            district,
+            commune,
+            address,
+            phoneNumber,
+            medicalServiceId,
+            clinicId,
+            specialty,
+            qualification,
+            description,
+        };
+
+        // Remove undefined values
+        removeUndefinedFields(updatedData);
+
+        const updatedDoctor = await DoctorModel.findByIdAndUpdate(
+            doctorId,
+            {
+                $set: updatedData,
+            },
+            {
+                new: true,
+            },
+        );
+
+        if (!updatedDoctor) {
+            return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Doctor is not found').build(res);
+        }
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Update doctor success')
+            .withData(updatedDoctor)
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};

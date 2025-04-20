@@ -61,6 +61,39 @@ export const authenticateAdmin = (req, res, next) => {
     }
 };
 
+// Using for api by admin or doctor
+export const authenticateAdminOrDoctor = (req, res, next) => {
+    try {
+        const token = req.headers?.authorization.split(' ')[1];
+        if (!token) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.UNAUTHORIZED)
+                .withMessage(ErrorMessage.UNAUTHORIZED)
+                .build(res);
+        }
+
+        // Verify token
+        const data = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+        if (data.role !== USER_ROLE.ADMIN && data.role !== USER_ROLE.DOCTOR) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.FORBIDDEN)
+                .withMessage(ErrorMessage.FORBIDDEN)
+                .build(res);
+        }
+
+        req.userId = data.id;
+        req.role = data.role;
+        next();
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.UNAUTHORIZED)
+            .withMessage(ErrorMessage.UNAUTHORIZED)
+            .build(res);
+    }
+};
+
 // Using for api by self user or admin
 export const authenticateSelfUserOrAdminMiddleware = (req, res, next) => {
     try {

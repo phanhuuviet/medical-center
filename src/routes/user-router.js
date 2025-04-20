@@ -3,6 +3,7 @@ import express from 'express';
 import * as userController from '../controllers/userController.js';
 import {
     authenticateAdmin,
+    authenticateAdminOrDoctor,
     authenticateSelfUserOrAdminMiddleware,
     authenticateToken,
 } from '../middlewares/authMiddleware.js';
@@ -34,5 +35,8 @@ router.get('/:doctorId/patients', userController.getAllPatientsByDoctor);
 
 // [PORT]
 router.post('/create-doctor', authenticateAdmin, userController.createDoctor);
+
+// [PUT]
+router.put('/:doctorId/update-doctor', authenticateAdminOrDoctor, userController.updateDoctor);
 
 export default router;

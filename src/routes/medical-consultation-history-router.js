@@ -1,7 +1,7 @@
 import express from 'express';
 
 import * as medicalConsultationHistoryController from '../controllers/medicalConsultationHistoryController.js';
-import { authenticateAdmin, authenticateToken } from '../middlewares/authMiddleware.js';
+import { authenticateAdmin, authenticateAdminOrDoctor, authenticateToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -10,12 +10,24 @@ router.get('/', authenticateToken, medicalConsultationHistoryController.getAllMe
 router.get('/:id', authenticateToken, medicalConsultationHistoryController.getMedicalConsultationHistoryById);
 
 // [POST]
-router.post('/', authenticateToken, medicalConsultationHistoryController.createMedicalConsultationHistory);
+router.post('/', authenticateAdminOrDoctor, medicalConsultationHistoryController.createMedicalConsultationHistory);
 
 // [PUT]
-router.put('/:id/update', authenticateToken, medicalConsultationHistoryController.updateMedicalConsultationHistory);
-router.put('/:id/cancel', authenticateAdmin, medicalConsultationHistoryController.cancelMedicalConsultationHistory);
-router.put('/:id/complete', authenticateAdmin, medicalConsultationHistoryController.completeMedicalConsultationHistory);
+router.put(
+    '/:id/update',
+    authenticateAdminOrDoctor,
+    medicalConsultationHistoryController.updateMedicalConsultationHistory,
+);
+router.put(
+    '/:id/cancel',
+    authenticateAdminOrDoctor,
+    medicalConsultationHistoryController.cancelMedicalConsultationHistory,
+);
+router.put(
+    '/:id/complete',
+    authenticateAdminOrDoctor,
+    medicalConsultationHistoryController.completeMedicalConsultationHistory,
+);
 
 // [DELETE]
 router.delete('/:id/delete', authenticateAdmin, medicalConsultationHistoryController.deleteMedicalConsultationHistory);

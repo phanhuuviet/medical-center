@@ -111,3 +111,15 @@ export const createDoctor = async (req, res, next) => {
             .build(res);
     }
 };
+
+export const updateDoctor = async (req, res, next) => {
+    try {
+        return await userService.updateDoctor(req, res, next);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
