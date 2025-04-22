@@ -133,7 +133,7 @@ export const createMedicalConsultationHistory = async (req, res) => {
             responsibilityDoctorId,
             patientId,
             clinicId,
-            examinationStartOfDay,
+            examinationDate: examinationStartOfDay,
             clinicScheduleId,
             examinationReason,
             medicalFee,
@@ -158,7 +158,7 @@ export const createMedicalConsultationHistory = async (req, res) => {
         const checkMedicalConsultationHistory = await MedicalConsultationHistoryModel.findOne({
             patientId,
             clinicId,
-            examinationStartOfDay,
+            examinationDate: examinationStartOfDay,
             clinicScheduleId,
             responsibilityDoctorId,
         });
@@ -173,7 +173,7 @@ export const createMedicalConsultationHistory = async (req, res) => {
             responsibilityDoctorId,
             patientId,
             clinicId,
-            examinationStartOfDay,
+            examinationDate: examinationStartOfDay,
             clinicScheduleId,
             examinationReason,
             reExaminateDate,
