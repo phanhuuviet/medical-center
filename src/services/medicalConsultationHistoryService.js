@@ -1,3 +1,5 @@
+import { startOfDay } from 'date-fns';
+
 import ErrorMessage from '../constants/error-message.js';
 import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
@@ -125,11 +127,13 @@ export const createMedicalConsultationHistory = async (req, res) => {
             patientAddress,
         } = req.body;
 
+        const examinationStartOfDay = startOfDay(new Date(examinationDate));
+
         const { error } = medicalConsultationHistorySchema.validate({
             responsibilityDoctorId,
             patientId,
             clinicId,
-            examinationDate,
+            examinationStartOfDay,
             clinicScheduleId,
             examinationReason,
             medicalFee,
@@ -151,11 +155,25 @@ export const createMedicalConsultationHistory = async (req, res) => {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         }
 
+        const checkMedicalConsultationHistory = await MedicalConsultationHistoryModel.findOne({
+            patientId,
+            clinicId,
+            examinationStartOfDay,
+            clinicScheduleId,
+            responsibilityDoctorId,
+        });
+        if (checkMedicalConsultationHistory) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Medical consultation history already exists')
+                .build(res);
+        }
+
         const medicalConsultationHistory = new MedicalConsultationHistoryModel({
             responsibilityDoctorId,
             patientId,
             clinicId,
-            examinationDate,
+            examinationStartOfDay,
             clinicScheduleId,
             examinationReason,
             reExaminateDate,
