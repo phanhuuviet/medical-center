@@ -25,6 +25,7 @@ export const removeUndefinedFields = (obj) => {
 };
 
 export const getDateFromISOFormat = (date) => {
+    // ISO date => YYYY-MM-DD
     const dateObj = new Date(date);
     return dateObj.toISOString().split('T')[0];
 };

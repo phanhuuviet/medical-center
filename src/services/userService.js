@@ -1,15 +1,16 @@
 import bcrypt from 'bcryptjs';
-import { isEmpty, isNil } from 'lodash-es';
+import { isEmpty, isNil, keyBy } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
 import { PAGE_SIZE, SALT_ROUNDS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
+import LeaveScheduleModel from '../models/LeaveScheduleModel.js';
 import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
 import UserModel, { DoctorModel } from '../models/UserModel.js';
 import { doctorSchema } from '../schemas/user-schema.js';
-import { removeFieldsInArrayOfObject, removeUndefinedFields } from '../utils/index.js';
+import { getDateFromISOFormat, removeFieldsInArrayOfObject, removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail } from '../utils/validate.js';
 
@@ -307,6 +308,66 @@ export const getAllPatientsByDoctor = async (req, res) => {
                 items: allPatients,
                 meta: { total: totalDocuments, page },
             })
+            .build(res);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
+// [GET] ${PREFIX_API}/user/:doctorId/working-schedules?date=date
+export const getDoctorWorkingSchedules = async (req, res) => {
+    try {
+        const doctorId = req.params.doctorId;
+        const date = req.query.date || new Date();
+
+        const checkDoctor = await DoctorModel.findOne({ _id: doctorId });
+        if (isNil(checkDoctor)) {
+            return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Doctor is not found').build(res);
+        }
+
+        // Lấy tất cả ca làm việc trong 1 ngày
+        // Lấy lịch làm việc của bác sĩ trong ngày đó
+        // Lấy lịch nghỉ của bác sĩ trong ngày đó
+        const [doctorWorkingSchedules, doctorShiftWorkingSchedules, doctorLeaveSchedules] = await Promise.all([
+            ClinicScheduleModel.find({
+                clinicId: checkDoctor.clinicId,
+            }),
+            MedicalConsultationHistoryModel.find({
+                responsibilityDoctorId: doctorId,
+                clinicId: checkDoctor.clinicId,
+                examinationDate: {
+                    $gte: new Date(date).setHours(0, 0, 0, 0),
+                    $lt: new Date(date).setHours(23, 59, 59),
+                },
+            }),
+            LeaveScheduleModel.find({
+                doctorId,
+                date: getDateFromISOFormat(date),
+            }),
+        ]);
+
+        const serializeDoctorShiftWorkingSchedules = keyBy(doctorShiftWorkingSchedules, 'clinicScheduleId');
+        const serializeDoctorLeaveSchedules = keyBy(doctorLeaveSchedules, 'clinicScheduleId');
+
+        const response = doctorWorkingSchedules.map((schedule) => {
+            const isWorking = serializeDoctorShiftWorkingSchedules[schedule._id] ? true : false;
+            const isLeave = serializeDoctorLeaveSchedules[schedule._id] ? true : false;
+
+            return {
+                ...schedule.toObject(),
+                isWorking,
+                isLeave,
+            };
+        });
+
+        return new ResponseBuilder()
+            .withCode(ResponseCode.SUCCESS)
+            .withMessage('Get doctor working schedules success')
+            .withData(response)
             .build(res);
     } catch (error) {
         console.log('Error', error);

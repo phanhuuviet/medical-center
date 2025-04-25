@@ -100,6 +100,18 @@ export const getAllPatientsByDoctor = async (req, res, next) => {
     }
 };
 
+export const getDoctorWorkingSchedules = async (req, res, next) => {
+    try {
+        return await userService.getDoctorWorkingSchedules(req, res, next);
+    } catch (error) {
+        console.log('Error', error);
+        return new ResponseBuilder()
+            .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)
+            .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
+            .build(res);
+    }
+};
+
 export const createDoctor = async (req, res, next) => {
     try {
         return await userService.createDoctor(req, res, next);
