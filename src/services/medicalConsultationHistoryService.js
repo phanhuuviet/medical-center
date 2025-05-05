@@ -132,8 +132,8 @@ export const createMedicalConsultationHistory = async (req, res) => {
 
         const examinationStartOfDay = startOfDay(new Date(examinationDate));
 
-        const { error } = medicalConsultationHistorySchema.validate({
-            responsibilityDoctorId,
+        // Validate cơ bản (không bắt buộc responsibilityDoctorId)
+        const baseValidation = {
             patientId,
             clinicId,
             examinationDate: examinationStartOfDay,
@@ -151,66 +151,75 @@ export const createMedicalConsultationHistory = async (req, res) => {
             patientDistrict,
             patientCommune,
             patientAddress,
-        });
+        };
+
+        if (responsibilityDoctorId) {
+            baseValidation.responsibilityDoctorId = responsibilityDoctorId;
+        }
+
+        const { error } = medicalConsultationHistorySchema.validate(baseValidation);
         const messageError = error?.details[0].message;
 
         if (messageError) {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         }
 
-        const [checkMedicalConsultationHistoryByPatient, checkMedicalConsultationHistoryByDoctor] = await Promise.all([
-            MedicalConsultationHistoryModel.findOne({
-                patientId,
-                clinicId,
-                examinationDate: examinationStartOfDay,
-                clinicScheduleId,
-            }),
-            MedicalConsultationHistoryModel.findOne({
-                responsibilityDoctorId,
-                clinicId,
-                examinationDate: examinationStartOfDay,
-                clinicScheduleId,
-            }),
-        ]);
+        // Nếu có responsibilityDoctorId thì mới kiểm tra trùng lịch và kiểm tra slot
+        if (responsibilityDoctorId) {
+            const [checkMedicalConsultationHistoryByPatient, checkMedicalConsultationHistoryByDoctor] =
+                await Promise.all([
+                    MedicalConsultationHistoryModel.findOne({
+                        patientId,
+                        clinicId,
+                        examinationDate: examinationStartOfDay,
+                        clinicScheduleId,
+                    }),
+                    MedicalConsultationHistoryModel.findOne({
+                        responsibilityDoctorId,
+                        clinicId,
+                        examinationDate: examinationStartOfDay,
+                        clinicScheduleId,
+                    }),
+                ]);
 
-        if (checkMedicalConsultationHistoryByPatient || checkMedicalConsultationHistoryByDoctor) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage('Medical consultation history already exists')
-                .build(res);
+            if (checkMedicalConsultationHistoryByPatient || checkMedicalConsultationHistoryByDoctor) {
+                return new ResponseBuilder()
+                    .withCode(ResponseCode.BAD_REQUEST)
+                    .withMessage('Medical consultation history already exists')
+                    .build(res);
+            }
+
+            // Check if at the clinicScheduleId have enought slots
+            // B1: Check xem hiện đang có bao nhiêu slot
+            // B2: Check xem có bn bác sĩ
+            // B2: Check xem có bác sĩ nào nghỉ không
+            // B3: Nếu không còn slot thì báo lỗi
+            const [numberSlotInThisSchedule, numberOfDoctorsInThisClinic, numberOfDoctorsOnLeave] = await Promise.all([
+                MedicalConsultationHistoryModel.countDocuments({
+                    clinicId,
+                    clinicScheduleId,
+                    examinationDate: examinationStartOfDay,
+                }),
+                DoctorModel.countDocuments({ clinicId }),
+                LeaveScheduleModel.countDocuments({
+                    doctorId: responsibilityDoctorId,
+                    date: getDateFromISOFormat(examinationStartOfDay),
+                    status: ACTIVE_STATUS.ACTIVE,
+                }),
+            ]);
+
+            const numberOfSlotsInThisSchedule =
+                numberOfDoctorsInThisClinic - numberOfDoctorsOnLeave - numberSlotInThisSchedule;
+
+            if (numberOfSlotsInThisSchedule <= 0) {
+                return new ResponseBuilder()
+                    .withCode(ResponseCode.BAD_REQUEST)
+                    .withMessage('This schedule is full, please choose another schedule')
+                    .build(res);
+            }
         }
 
-        // Check if at the clinicScheduleId have enought slots
-        // B1: Check xem hiện đang có bao nhiêu slot
-        // B2: Check xem có bn bác sĩ
-        // B2: Check xem có bác sĩ nào nghỉ không
-        // B3: Nếu không còn slot thì báo lỗi
-        const [numberSlotInThisSchedule, numberOfDoctorsInThisClinic, numberOfDoctorsOnLeave] = await Promise.all([
-            MedicalConsultationHistoryModel.countDocuments({
-                clinicId,
-                clinicScheduleId,
-                examinationDate: examinationStartOfDay,
-            }),
-            DoctorModel.countDocuments({
-                clinicId,
-            }),
-            LeaveScheduleModel.countDocuments({
-                doctorId: responsibilityDoctorId,
-                date: getDateFromISOFormat(examinationStartOfDay),
-                status: ACTIVE_STATUS.ACTIVE,
-            }),
-        ]);
-
-        const numberOfSlotsInThisSchedule =
-            numberOfDoctorsInThisClinic - numberOfDoctorsOnLeave - numberSlotInThisSchedule;
-
-        if (numberOfSlotsInThisSchedule <= 0) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.BAD_REQUEST)
-                .withMessage('This schedule is full, please choose another schedule')
-                .build(res);
-        }
-
+        // Tạo lịch khám
         const medicalConsultationHistory = new MedicalConsultationHistoryModel({
             responsibilityDoctorId,
             patientId,
@@ -234,6 +243,7 @@ export const createMedicalConsultationHistory = async (req, res) => {
         });
 
         await medicalConsultationHistory.save();
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Create medical consultation history success')
