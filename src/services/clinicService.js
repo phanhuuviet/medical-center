@@ -1,9 +1,12 @@
+import { endOfDay, startOfDay } from 'date-fns';
 import { isNil } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
 import { ACTIVE_STATUS, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import ClinicModel from '../models/ClinicModel.js';
+import LeaveScheduleModel from '../models/LeaveScheduleModel.js';
+import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
 import { DoctorModel } from '../models/UserModel.js';
 import { clinicSchema } from '../schemas/clinic-schema.js';
 import { removeUndefinedFields } from '../utils/index.js';
@@ -71,16 +74,48 @@ export const getClinicById = async (req, res) => {
     }
 };
 
-// [GET] ${PREFIX_API}/:id/doctor
+// [GET] ${PREFIX_API}/:id/doctor?date=date&clinicScheduleId=clinicScheduleId
 export const getDoctorByClinicId = async (req, res) => {
     try {
         const clinicId = req.params.id;
-        const checkClinic = await ClinicModel.findOne({ _id: clinicId });
-        if (isNil(checkClinic)) {
+        const { date, clinicScheduleId } = req.query;
+
+        const checkClinic = await ClinicModel.findById(clinicId);
+        if (!checkClinic) {
             return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Clinic is not found').build(res);
         }
 
-        const doctors = await DoctorModel.find({ clinicId });
+        let doctors;
+
+        if (date && clinicScheduleId) {
+            const startDate = startOfDay(new Date(date));
+            const endDate = endOfDay(new Date(date));
+
+            const [medicalConsultationHistoryInDate, leaveScheduleOfDoctorInDate] = await Promise.all([
+                MedicalConsultationHistoryModel.find({
+                    clinicScheduleId,
+                    examinationDate: { $gte: startDate, $lt: endDate },
+                }),
+                LeaveScheduleModel.find({
+                    clinicScheduleId,
+                    date: { $gte: startDate, $lt: endDate },
+                }),
+            ]);
+
+            const busyDoctorIds = [
+                ...new Set([
+                    ...medicalConsultationHistoryInDate.map((item) => item.responsibilityDoctorId.toString()),
+                    ...leaveScheduleOfDoctorInDate.map((item) => item.doctorId.toString()),
+                ]),
+            ];
+
+            doctors = await DoctorModel.find({
+                clinicId,
+                _id: { $nin: busyDoctorIds },
+            });
+        } else {
+            doctors = await DoctorModel.find({ clinicId });
+        }
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
@@ -88,7 +123,7 @@ export const getDoctorByClinicId = async (req, res) => {
             .withData(doctors)
             .build(res);
     } catch (error) {
-        console.log('Error', error);
+        console.error('Error in getDoctorByClinicId:', error);
         return new ResponseBuilder()
             .withCode(ResponseCode.INTERNAL_SERVER_ERROR)
             .withMessage(ErrorMessage.INTERNAL_SERVER_ERROR)

@@ -1,13 +1,16 @@
 import { startOfDay } from 'date-fns';
 
 import ErrorMessage from '../constants/error-message.js';
-import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
+import { ACTIVE_STATUS, MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
+import LeaveScheduleModel from '../models/LeaveScheduleModel.js';
 import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
+import { DoctorModel } from '../models/UserModel.js';
 import {
     medicalConsultationHistorySchema,
     medicalConsultationHistoryUpdateSchema,
 } from '../schemas/medicalConsultationHistory-schema.js';
+import { getDateFromISOFormat } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
 // [GET] ${PREFIX_API}/medical-consultation-history?patientId=patientId
@@ -155,17 +158,56 @@ export const createMedicalConsultationHistory = async (req, res) => {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         }
 
-        const checkMedicalConsultationHistory = await MedicalConsultationHistoryModel.findOne({
-            patientId,
-            clinicId,
-            examinationDate: examinationStartOfDay,
-            clinicScheduleId,
-            responsibilityDoctorId,
-        });
-        if (checkMedicalConsultationHistory) {
+        const [checkMedicalConsultationHistoryByPatient, checkMedicalConsultationHistoryByDoctor] = await Promise.all([
+            MedicalConsultationHistoryModel.findOne({
+                patientId,
+                clinicId,
+                examinationDate: examinationStartOfDay,
+                clinicScheduleId,
+            }),
+            MedicalConsultationHistoryModel.findOne({
+                responsibilityDoctorId,
+                clinicId,
+                examinationDate: examinationStartOfDay,
+                clinicScheduleId,
+            }),
+        ]);
+
+        if (checkMedicalConsultationHistoryByPatient || checkMedicalConsultationHistoryByDoctor) {
             return new ResponseBuilder()
                 .withCode(ResponseCode.BAD_REQUEST)
                 .withMessage('Medical consultation history already exists')
+                .build(res);
+        }
+
+        // Check if at the clinicScheduleId have enought slots
+        // B1: Check xem hiện đang có bao nhiêu slot
+        // B2: Check xem có bn bác sĩ
+        // B2: Check xem có bác sĩ nào nghỉ không
+        // B3: Nếu không còn slot thì báo lỗi
+        const [numberSlotInThisSchedule, numberOfDoctorsInThisClinic, numberOfDoctorsOnLeave] = await Promise.all([
+            MedicalConsultationHistoryModel.countDocuments({
+                clinicId,
+                clinicScheduleId,
+                examinationDate: examinationStartOfDay,
+            }),
+            DoctorModel.countDocuments({
+                clinicId,
+            }),
+            LeaveScheduleModel.countDocuments({
+                doctorId: responsibilityDoctorId,
+                date: getDateFromISOFormat(examinationStartOfDay),
+                status: ACTIVE_STATUS.ACTIVE,
+            }),
+        ]);
+
+        const numberOfSlotsInThisSchedule =
+            numberOfDoctorsInThisClinic - numberOfDoctorsOnLeave - numberSlotInThisSchedule;
+
+        if (numberOfSlotsInThisSchedule <= 0) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('This schedule is full, please choose another schedule')
                 .build(res);
         }
 
