@@ -99,6 +99,8 @@ export const getDoctorByClinicId = async (req, res) => {
             const startDate = startOfDay(new Date(date));
             const endDate = endOfDay(new Date(date));
 
+            // B1: Tìm những ca khám của lịch khám đã chọn trong ngày
+            // B2: Tìm những lịch nghỉ của bác sĩ trong ngày
             const [medicalConsultationHistoryInDate, leaveScheduleOfDoctorInDate] = await Promise.all([
                 MedicalConsultationHistoryModel.find({
                     clinicScheduleId,
@@ -117,14 +119,15 @@ export const getDoctorByClinicId = async (req, res) => {
                 ]),
             ];
 
-            doctors = await DoctorModel.find({
-                query,
-                _id: { $nin: busyDoctorIds },
-            });
+            if (busyDoctorIds.length > 0) {
+                query._id = { $nin: busyDoctorIds };
+            }
+
+            doctors = await DoctorModel.find(query);
         } else {
             doctors = await DoctorModel.find(query);
         }
-
+        console.log('query', query);
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get doctor success')
