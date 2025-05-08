@@ -153,9 +153,9 @@ export const createMedicalConsultationHistory = async (req, res) => {
             patientAddress,
         };
 
-        if (responsibilityDoctorId) {
-            baseValidation.responsibilityDoctorId = responsibilityDoctorId;
-        }
+        // if (responsibilityDoctorId) {
+        //     baseValidation.responsibilityDoctorId = responsibilityDoctorId;
+        // }
 
         const { error } = medicalConsultationHistorySchema.validate(baseValidation);
         const messageError = error?.details[0].message;
