@@ -74,11 +74,19 @@ export const getClinicById = async (req, res) => {
     }
 };
 
-// [GET] ${PREFIX_API}/:id/doctor?date=date&clinicScheduleId=clinicScheduleId
+// [GET] ${PREFIX_API}/:id/doctor?date=date&clinicScheduleId=clinicScheduleId&medicalServiceId=medicalServiceId
 export const getDoctorByClinicId = async (req, res) => {
     try {
         const clinicId = req.params.id;
-        const { date, clinicScheduleId } = req.query;
+        const { date, clinicScheduleId, medicalServiceId } = req.query;
+
+        const query = {
+            clinicId,
+        };
+
+        if (medicalServiceId) {
+            query.medicalServiceId = medicalServiceId;
+        }
 
         const checkClinic = await ClinicModel.findById(clinicId);
         if (!checkClinic) {
@@ -110,11 +118,11 @@ export const getDoctorByClinicId = async (req, res) => {
             ];
 
             doctors = await DoctorModel.find({
-                clinicId,
+                query,
                 _id: { $nin: busyDoctorIds },
             });
         } else {
-            doctors = await DoctorModel.find({ clinicId });
+            doctors = await DoctorModel.find(query);
         }
 
         return new ResponseBuilder()

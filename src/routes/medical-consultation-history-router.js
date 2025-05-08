@@ -18,11 +18,7 @@ router.put(
     authenticateAdminOrDoctor,
     medicalConsultationHistoryController.updateMedicalConsultationHistory,
 );
-router.put(
-    '/:id/cancel',
-    authenticateAdminOrDoctor,
-    medicalConsultationHistoryController.cancelMedicalConsultationHistory,
-);
+router.put('/:id/cancel', authenticateToken, medicalConsultationHistoryController.cancelMedicalConsultationHistory);
 router.put(
     '/:id/complete',
     authenticateAdminOrDoctor,

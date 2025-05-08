@@ -198,7 +198,7 @@ export const updateAvatar = async (req, res) => {
 // [DELETE] ${PREFIX_API}/user/:id/delete
 export const deleteUser = async (req, res) => {
     try {
-        const userId = req.userId;
+        const userId = req.params.id;
         const checkUser = await UserModel.findOne({ _id: userId });
 
         if (isNil(checkUser)) {

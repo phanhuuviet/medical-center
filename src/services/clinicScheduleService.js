@@ -15,7 +15,7 @@ import * as doctorWorkingScheduleService from './doctorWorkingScheduleService.js
 export const getClinicScheduleByClinicId = async (req, res) => {
     try {
         const clinicId = req.params.clinicId;
-        const clinicSchedules = await ClinicScheduleModel.find({ clinicId });
+        const clinicSchedules = await ClinicScheduleModel.find({ clinicId }).sort({ startTime: 1 });
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)

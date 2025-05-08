@@ -32,11 +32,26 @@ export const getAllMedicalService = async (req, res) => {
             MedicalServiceModel.countDocuments(query),
         ]);
 
+        const medicalServicesIds = medicalServices.map((medicalService) => medicalService._id);
+        const doctors = await DoctorModel.find({
+            medicalServiceId: { $in: medicalServicesIds },
+            role: USER_ROLE.DOCTOR,
+        });
+        const doctorsByMedicalServiceId = groupBy(doctors, 'medicalServiceId');
+        console.log('doctorsByMedicalServiceId', doctorsByMedicalServiceId);
+        const medicalServicesWithDoctors = medicalServices.map((medicalService) => {
+            const doctorsOfMedicalService = doctorsByMedicalServiceId[medicalService._id] || [];
+            return {
+                ...medicalService.toObject(),
+                doctors: doctorsOfMedicalService,
+            };
+        });
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get all medical services success')
             .withData({
-                items: medicalServices,
+                items: medicalServicesWithDoctors,
                 meta: { total: totalDocuments, page },
             })
             .build(res);
@@ -62,10 +77,18 @@ export const getMedicalServiceById = async (req, res) => {
                 .build(res);
         }
 
+        // Lấy danh sách bác sĩ thuộc dịch vụ y tế
+        const allDoctors = await DoctorModel.find({ medicalServiceId });
+        const doctorsByMedicalServiceId = groupBy(allDoctors, 'medicalServiceId');
+        const medicalServiceWithDoctors = {
+            ...checkMedicalService.toObject(),
+            doctors: doctorsByMedicalServiceId[medicalServiceId] || [],
+        };
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get medical service success')
-            .withData(checkMedicalService)
+            .withData(medicalServiceWithDoctors)
             .build(res);
     } catch (error) {
         console.log('Error', error);

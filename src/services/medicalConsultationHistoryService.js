@@ -381,6 +381,17 @@ export const cancelMedicalConsultationHistory = async (req, res) => {
                 .build(res);
         }
 
+        if (
+            [MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED, MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE].includes(
+                checkMedicalConsultationHistory.status,
+            )
+        ) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Only pending medical consultation history can be canceled')
+                .build(res);
+        }
+
         const response = await MedicalConsultationHistoryModel.findOneAndUpdate(
             { _id: medicalConsultationHistoryId },
             { status: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED },
@@ -468,6 +479,17 @@ export const completeMedicalConsultationHistory = async (req, res) => {
             return new ResponseBuilder()
                 .withCode(ResponseCode.NOT_FOUND)
                 .withMessage('Medical consultation history is not found')
+                .build(res);
+        }
+
+        if (
+            [MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED, MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE].includes(
+                checkMedicalConsultationHistory.status,
+            )
+        ) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Only pending medical consultation history can be completed')
                 .build(res);
         }
 
