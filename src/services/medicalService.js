@@ -1,4 +1,5 @@
-import { groupBy } from 'lodash-es';
+import { endOfDay, startOfDay } from 'date-fns';
+import { groupBy, keyBy } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
 import { ACTIVE_STATUS, MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
@@ -99,46 +100,98 @@ export const getMedicalServiceById = async (req, res) => {
     }
 };
 
-// [GET] ${PREFIX_API}/medical-service/:id/schedules?date=date
+// [GET] ${PREFIX_API}/medical-service/:id/schedules?date=date&doctorId=doctorId
 export const getMedicalServiceSchedules = async (req, res) => {
     try {
         const medicalServiceId = req.params.id;
-        const { date } = req.query;
+        const { date, doctorId } = req.query;
 
-        // Kiểm tra xem dịch vụ y tế có tồn tại không
-        const checkMedicalService = await MedicalServiceModel.findById(medicalServiceId);
-        if (!checkMedicalService) {
+        // 1. Validate Medical Service
+        const medicalService = await MedicalServiceModel.findById(medicalServiceId);
+        if (!medicalService) {
             return new ResponseBuilder()
                 .withCode(ResponseCode.NOT_FOUND)
                 .withMessage('Medical service is not found')
                 .build(res);
         }
 
-        // Lấy tất cả lịch làm việc của phòng khám
-        const schedules = await ClinicScheduleModel.find({ clinicId: checkMedicalService.clinicId });
+        // 2. Get all clinic schedules for this medical service
+        const clinicSchedules = await ClinicScheduleModel.find({ clinicId: medicalService.clinicId }).sort({
+            startTime: 1,
+        });
+
+        // === CASE 1: Only clinic schedule (no date filter) ===
         if (!date) {
             return new ResponseBuilder()
                 .withCode(ResponseCode.SUCCESS)
                 .withMessage('Get medical service schedules success')
-                .withData(schedules)
+                .withData(clinicSchedules)
                 .build(res);
         }
 
-        // B1: Lấy danh sách bác sĩ thuộc dịch vụ y tế
-        const allDoctors = await DoctorModel.find({ medicalServiceId }, { _id: 1 });
-        const allDoctorIds = allDoctors.map((doc) => doc._id);
+        // === CASE 2: Schedule of a specific doctor on a date ===
+        if (doctorId && date) {
+            const doctor = await DoctorModel.findById(doctorId);
+            if (!doctor || doctor.medicalServiceId.toString() !== medicalServiceId) {
+                return new ResponseBuilder()
+                    .withCode(ResponseCode.NOT_FOUND)
+                    .withMessage('Doctor is not found or does not belong to this medical service')
+                    .build(res);
+            }
 
-        // B2: Truy vấn lịch nghỉ và lịch khám
+            const targetDate = getDateFromISOFormat(date);
+
+            const [leaveSchedules, workingSchedules] = await Promise.all([
+                LeaveScheduleModel.find({
+                    doctorId,
+                    date: targetDate,
+                    status: ACTIVE_STATUS.ACTIVE,
+                }),
+                MedicalConsultationHistoryModel.find({
+                    clinicId: medicalService.clinicId,
+                    examinationDate: {
+                        $gte: startOfDay(new Date(date)),
+                        $lt: endOfDay(new Date(date)),
+                    },
+                    status: {
+                        $in: [
+                            MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.PENDING,
+                            MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE,
+                        ],
+                    },
+                    responsibilityDoctorId: doctorId,
+                }),
+            ]);
+
+            const leaveMap = keyBy(leaveSchedules, 'clinicScheduleId');
+            const workMap = keyBy(workingSchedules, 'clinicScheduleId');
+
+            const availableSchedules = clinicSchedules.filter((schedule) => {
+                const id = schedule._id.toString();
+                return !leaveMap[id] && !workMap[id];
+            });
+
+            return new ResponseBuilder()
+                .withCode(ResponseCode.SUCCESS)
+                .withMessage('Get medical service schedules success')
+                .withData(availableSchedules)
+                .build(res);
+        }
+
+        // === CASE 3: Schedule of all doctors in medical service on a date ===
+        const doctors = await DoctorModel.find({ medicalServiceId }, { _id: 1 });
+        const doctorIds = doctors.map((doc) => doc._id);
+        const targetDate = getDateFromISOFormat(date);
+
         const [leaveSchedules, workingSchedules] = await Promise.all([
             LeaveScheduleModel.find({
-                doctorId: { $in: allDoctorIds },
-                date: getDateFromISOFormat(date),
+                doctorId: { $in: doctorIds },
+                date: targetDate,
                 status: ACTIVE_STATUS.ACTIVE,
-            }).populate('clinicSchedule'),
-
+            }),
             MedicalConsultationHistoryModel.find({
-                clinicId: checkMedicalService.clinicId,
-                clinicScheduleId: { $in: schedules.map((s) => s._id) },
+                clinicId: medicalService.clinicId,
+                clinicScheduleId: { $in: clinicSchedules.map((s) => s._id) },
                 examinationDate: date,
                 status: {
                     $in: [
@@ -149,17 +202,15 @@ export const getMedicalServiceSchedules = async (req, res) => {
             }),
         ]);
 
-        // B3: Nhóm dữ liệu theo clinicScheduleId
-        const leaveSchedulesGrouped = groupBy(leaveSchedules, 'clinicScheduleId');
-        const workingSchedulesGrouped = groupBy(workingSchedules, 'clinicScheduleId');
+        const leaveGrouped = groupBy(leaveSchedules, 'clinicScheduleId');
+        const workGrouped = groupBy(workingSchedules, 'clinicScheduleId');
 
-        // B4: Lọc ra các ca làm việc có slot trống
-        const availableSchedules = schedules.filter((schedule) => {
-            const numberSlotInAShift = allDoctors.length;
-            const numberOfDoctorLeave = leaveSchedulesGrouped[schedule._id]?.length || 0;
-            const numberOfDoctorWorking = workingSchedulesGrouped[schedule._id]?.length || 0;
-
-            return numberSlotInAShift - numberOfDoctorLeave - numberOfDoctorWorking > 0;
+        const availableSchedules = clinicSchedules.filter((schedule) => {
+            const scheduleId = schedule._id;
+            const totalDoctors = doctors.length;
+            const leaves = leaveGrouped[scheduleId]?.length || 0;
+            const works = workGrouped[scheduleId]?.length || 0;
+            return totalDoctors - leaves - works > 0;
         });
 
         return new ResponseBuilder()
