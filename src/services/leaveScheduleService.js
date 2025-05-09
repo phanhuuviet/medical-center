@@ -118,8 +118,8 @@ export const activeLeaveSchedule = async (req, res) => {
 export const inactiveLeaveSchedule = async (req, res) => {
     try {
         const leaveScheduleId = req.params.id;
-        const doctorId = req.userId;
-        const role = req.role;
+        // const doctorId = req.userId;
+        // const role = req.role;
 
         const checkLeaveSchedule = await LeaveScheduleModel.findOne({ _id: leaveScheduleId });
 
@@ -131,13 +131,13 @@ export const inactiveLeaveSchedule = async (req, res) => {
                 .build(res);
         }
 
-        // Check doctorId is match
-        if (!(role === USER_ROLE.ADMIN || doctorId === checkLeaveSchedule.doctorId)) {
-            return new ResponseBuilder()
-                .withCode(ResponseCode.FORBIDDEN)
-                .withMessage(ErrorMessage.FORBIDDEN)
-                .build(res);
-        }
+        // // Check doctorId is match
+        // if (!(role === USER_ROLE.ADMIN || doctorId === checkLeaveSchedule.doctorId)) {
+        //     return new ResponseBuilder()
+        //         .withCode(ResponseCode.FORBIDDEN)
+        //         .withMessage(ErrorMessage.FORBIDDEN)
+        //         .build(res);
+        // }
 
         // Check leave schedule is inactive
         if (checkLeaveSchedule.status === ACTIVE_STATUS.INACTIVE) {
