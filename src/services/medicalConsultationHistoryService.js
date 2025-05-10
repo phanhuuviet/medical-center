@@ -166,26 +166,41 @@ export const createMedicalConsultationHistory = async (req, res) => {
 
         // Nếu có responsibilityDoctorId thì mới kiểm tra trùng lịch và kiểm tra slot
         if (responsibilityDoctorId) {
-            const [checkMedicalConsultationHistoryByPatient, checkMedicalConsultationHistoryByDoctor] =
-                await Promise.all([
-                    MedicalConsultationHistoryModel.findOne({
-                        patientId,
-                        clinicId,
-                        examinationDate: examinationStartOfDay,
-                        clinicScheduleId,
-                    }),
-                    MedicalConsultationHistoryModel.findOne({
-                        responsibilityDoctorId,
-                        clinicId,
-                        examinationDate: examinationStartOfDay,
-                        clinicScheduleId,
-                    }),
-                ]);
+            const [
+                checkMedicalConsultationHistoryByPatient,
+                checkMedicalConsultationHistoryByDoctor,
+                checkLeaveScheduleOfDoctor,
+            ] = await Promise.all([
+                MedicalConsultationHistoryModel.findOne({
+                    patientId,
+                    clinicId,
+                    examinationDate: examinationStartOfDay,
+                    clinicScheduleId,
+                }),
+                MedicalConsultationHistoryModel.findOne({
+                    responsibilityDoctorId,
+                    clinicId,
+                    examinationDate: examinationStartOfDay,
+                    clinicScheduleId,
+                }),
+                LeaveScheduleModel.findOne({
+                    doctorId: responsibilityDoctorId,
+                    date: getDateFromISOFormat(examinationStartOfDay),
+                    status: ACTIVE_STATUS.ACTIVE,
+                }),
+            ]);
 
             if (checkMedicalConsultationHistoryByPatient || checkMedicalConsultationHistoryByDoctor) {
                 return new ResponseBuilder()
                     .withCode(ResponseCode.BAD_REQUEST)
                     .withMessage('Medical consultation history already exists')
+                    .build(res);
+            }
+
+            if (checkLeaveScheduleOfDoctor) {
+                return new ResponseBuilder()
+                    .withCode(ResponseCode.BAD_REQUEST)
+                    .withMessage('Doctor is on leave')
                     .build(res);
             }
 
@@ -311,13 +326,37 @@ export const updateMedicalConsultationHistory = async (req, res) => {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         }
 
-        const checkMedicalConsultationHistory = await MedicalConsultationHistoryModel.findOne({
-            _id: medicalConsultationHistoryId,
-        });
+        // const checkMedicalConsultationHistory = await MedicalConsultationHistoryModel.findOne({
+        //     _id: medicalConsultationHistoryId,
+        // });
+        // const checkLeaveScheduleOfDoctor = await LeaveScheduleModel.findOne({
+        //     doctorId: responsibilityDoctorId,
+        //     date: getDateFromISOFormat(examinationDate),
+        //     status: ACTIVE_STATUS.ACTIVE,
+        // });
+
+        const [checkMedicalConsultationHistory, checkLeaveScheduleOfDoctor] = await Promise.all([
+            MedicalConsultationHistoryModel.findOne({
+                _id: medicalConsultationHistoryId,
+            }),
+            LeaveScheduleModel.findOne({
+                doctorId: responsibilityDoctorId,
+                date: getDateFromISOFormat(examinationDate),
+                status: ACTIVE_STATUS.ACTIVE,
+            }),
+        ]);
+
         if (!checkMedicalConsultationHistory) {
             return new ResponseBuilder()
                 .withCode(ResponseCode.NOT_FOUND)
                 .withMessage('Medical consultation history is not found')
+                .build(res);
+        }
+
+        if (checkLeaveScheduleOfDoctor) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Doctor is on leave')
                 .build(res);
         }
 
