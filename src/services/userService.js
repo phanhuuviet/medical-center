@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { isEmpty, isNil, keyBy } from 'lodash-es';
 
 import ErrorMessage from '../constants/error-message.js';
-import { PAGE_SIZE, SALT_ROUNDS } from '../constants/index.js';
+import { MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE, SALT_ROUNDS } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
@@ -287,6 +287,9 @@ export const getAllPatientsByDoctor = async (req, res) => {
         const query = {
             ...(userName && { userName: { $regex: userName, $options: 'i' } }),
             responsibilityDoctorId: doctorId,
+            status: {
+                $in: [MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE, MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.PENDING],
+            },
         };
 
         // Lấy tất cả patientId duy nhất theo query

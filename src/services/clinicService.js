@@ -74,11 +74,11 @@ export const getClinicById = async (req, res) => {
     }
 };
 
-// [GET] ${PREFIX_API}/:id/doctor?date=date&clinicScheduleId=clinicScheduleId&medicalServiceId=medicalServiceId
+// [GET] ${PREFIX_API}/:id/doctor?date=date&clinicScheduleId=clinicScheduleId&medicalServiceId=medicalServiceId&isNotInAnotherMedicalService=isNotInAnotherMedicalService
 export const getDoctorByClinicId = async (req, res) => {
     try {
         const clinicId = req.params.id;
-        const { date, clinicScheduleId, medicalServiceId } = req.query;
+        const { date, clinicScheduleId, medicalServiceId, isNotInAnotherMedicalService } = req.query;
 
         const query = {
             clinicId,
@@ -88,13 +88,16 @@ export const getDoctorByClinicId = async (req, res) => {
             query.medicalServiceId = medicalServiceId;
         }
 
+        if (isNotInAnotherMedicalService) {
+            query.medicalServiceId = { $exists: false };
+        }
+
         const checkClinic = await ClinicModel.findById(clinicId);
         if (!checkClinic) {
             return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Clinic is not found').build(res);
         }
 
-        let doctors;
-
+        //  Nếu có filter date và clinicScheduleId thì tìm những bác sĩ không có lịch khám trong ngày
         if (date && clinicScheduleId) {
             const startDate = startOfDay(new Date(date));
             const endDate = endOfDay(new Date(date));
@@ -122,12 +125,10 @@ export const getDoctorByClinicId = async (req, res) => {
             if (busyDoctorIds.length > 0) {
                 query._id = { $nin: busyDoctorIds };
             }
-
-            doctors = await DoctorModel.find(query);
-        } else {
-            doctors = await DoctorModel.find(query);
         }
-        console.log('query', query);
+
+        const doctors = await DoctorModel.find(query);
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Get doctor success')
