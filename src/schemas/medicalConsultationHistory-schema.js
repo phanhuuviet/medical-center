@@ -29,6 +29,11 @@ export const medicalConsultationHistorySchema = Joi.object({
         'string.empty': 'Examination reason is not allowed to be empty',
         'any.required': 'Examination reason is required',
     }),
+    medicalServiceId: Joi.string().required().messages({
+        'string.base': 'medicalServiceId must be a string',
+        'string.empty': 'medicalServiceId is not allowed to be empty',
+        'any.required': 'medicalServiceId is required',
+    }),
     medicalFee: Joi.number().required().messages({
         'number.base': 'Medical fee must be a number',
         'number.empty': 'Medical fee is not allowed to be empty',

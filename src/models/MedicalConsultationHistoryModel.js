@@ -20,6 +20,7 @@ const MedicalConsultationHistorySchema = new mongoose.Schema(
         diagnosis: { type: String },
         reExaminateDate: { type: Date },
         noteFromDoctor: { type: String },
+        medicalServiceId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'MedicalService' },
         medicalFee: { type: Number, required: true },
         medicalServiceName: { type: String, required: true },
         // facilityName: { type: String, required: true },
