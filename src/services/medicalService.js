@@ -39,7 +39,6 @@ export const getAllMedicalService = async (req, res) => {
             role: USER_ROLE.DOCTOR,
         });
         const doctorsByMedicalServiceId = groupBy(doctors, 'medicalServiceId');
-        console.log('doctorsByMedicalServiceId', doctorsByMedicalServiceId);
         const medicalServicesWithDoctors = medicalServices.map((medicalService) => {
             const doctorsOfMedicalService = doctorsByMedicalServiceId[medicalService._id] || [];
             return {

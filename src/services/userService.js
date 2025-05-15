@@ -15,6 +15,7 @@ import ResponseBuilder from '../utils/response-builder.js';
 import { checkEmail } from '../utils/validate.js';
 
 import * as doctorWorkingScheduleService from './doctorWorkingScheduleService.js';
+import { createHistoryLog } from './historyLogService.js';
 
 // [GET] ${PREFIX_API}/user?role=role&code=code&userName=userName&_page=_page&_pageSize=_pageSize
 export const getAllUsers = async (req, res) => {
@@ -145,6 +146,8 @@ export const updateUser = async (req, res) => {
             return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('User is not found').build(res);
         }
 
+        await createHistoryLog(userId, 'UPDATE', `Update user`, currentUserId, 'user', updatedUser._id);
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Update user success')
@@ -180,6 +183,8 @@ export const updateAvatar = async (req, res) => {
         if (!updatedUser) {
             return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('User is not found').build(res);
         }
+
+        await createHistoryLog(userId, 'UPDATE', `Update avatar`, req.userId, 'user', updatedUser._id);
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)

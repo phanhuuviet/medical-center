@@ -14,6 +14,8 @@ import {
 import { getDateFromISOFormat } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
+import { createHistoryLog } from './historyLogService.js';
+
 // [GET] ${PREFIX_API}/medical-consultation-history?patientId=patientId
 // &clinicId=clinicId
 // &status=status
@@ -108,6 +110,8 @@ export const getMedicalConsultationHistoryById = async (req, res) => {
 
 // [POST] ${PREFIX_API}/medical-consultation-history
 export const createMedicalConsultationHistory = async (req, res) => {
+    const userPerformId = req.userId;
+
     try {
         let {
             responsibilityDoctorId,
@@ -323,6 +327,15 @@ export const createMedicalConsultationHistory = async (req, res) => {
 
         await newHistory.save();
 
+        await createHistoryLog(
+            patientId,
+            'CREATE',
+            `Create medical consultation history`,
+            userPerformId,
+            'medical-consultation-history',
+            newHistory._id,
+        );
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Create medical consultation history success')
@@ -476,6 +489,15 @@ export const updateMedicalConsultationHistory = async (req, res) => {
             },
         );
 
+        await createHistoryLog(
+            patientId,
+            'UPDATE',
+            `Update medical consultation history`,
+            req.userId,
+            'medical-consultation-history',
+            response._id,
+        );
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Update medical consultation history success')
@@ -522,6 +544,15 @@ export const cancelMedicalConsultationHistory = async (req, res) => {
             {
                 new: true,
             },
+        );
+
+        await createHistoryLog(
+            response.patientId,
+            'UPDATE',
+            `Cancel medical consultation history`,
+            req.userId,
+            'medical-consultation-history',
+            response._id,
         );
 
         return new ResponseBuilder()
@@ -682,6 +713,15 @@ export const completeMedicalConsultationHistory = async (req, res) => {
             },
         );
 
+        await createHistoryLog(
+            response.patientId,
+            'UPDATE',
+            `Complete medical consultation history`,
+            req.userId,
+            'medical-consultation-history',
+            response._id,
+        );
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Complete medical consultation history success')
@@ -712,6 +752,16 @@ export const deleteMedicalConsultationHistory = async (req, res) => {
         }
 
         await MedicalConsultationHistoryModel.deleteOne({ _id: medicalConsultationHistoryId });
+
+        await createHistoryLog(
+            checkMedicalConsultationHistory.patientId,
+            'DELETE',
+            `Delete medical consultation history`,
+            req.userId,
+            'medical-consultation-history',
+            medicalConsultationHistoryId,
+        );
+
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
             .withMessage('Delete medical consultation history success')

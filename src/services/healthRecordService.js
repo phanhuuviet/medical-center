@@ -6,6 +6,8 @@ import HealthRecordModel from '../models/HealthRecordModel.js';
 import { removeFieldsInObject } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
+import { createHistoryLog } from './historyLogService.js';
+
 // [GET] ${PREFIX_API}/health-record/:userId
 export const getHealthRecordByUserId = async (req, res) => {
     try {
@@ -39,6 +41,7 @@ export const getHealthRecordByUserId = async (req, res) => {
 export const updateHealthRecord = async (req, res) => {
     try {
         const userId = req.params.userId;
+        const userPerformId = req.userId;
         const { bloodType, height, weight, healthHistory } = req.body;
 
         const checkHealthRecord = await HealthRecordModel.findOne({ userId });
@@ -63,6 +66,15 @@ export const updateHealthRecord = async (req, res) => {
             {
                 new: true,
             },
+        );
+
+        await createHistoryLog(
+            userId,
+            'UPDATE',
+            `Update health record`,
+            userPerformId,
+            'health-record',
+            updateHealthRecord._id,
         );
 
         return new ResponseBuilder()
