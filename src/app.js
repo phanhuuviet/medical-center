@@ -2,6 +2,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
+import { startDailyCheckReqJob } from './cronJobs/checkReqChange.js';
 import routes from './routes/index.js';
 import { connectDb } from './utils/connectDb.js';
 
@@ -21,6 +22,9 @@ app.use((req, res, next) => {
 //  Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Cron job
+startDailyCheckReqJob();
 
 // Routes application
 routes(app);

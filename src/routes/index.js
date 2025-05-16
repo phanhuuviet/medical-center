@@ -9,6 +9,7 @@ import notificationRouter from './history-log-router.js';
 import leaveScheduleRouter from './leave-schedule-router.js';
 import medicalConsultationHistoryRouter from './medical-consultation-history-router.js';
 import medicalServiceRouter from './medical-service-router.js';
+import requestChangeScheduleRouter from './request-change-schedule-router.js';
 import userRouter from './user-router.js';
 import utilRouter from './util-router.js';
 
@@ -24,6 +25,7 @@ const routes = (app) => {
     app.use(`${PREFIX_API}/medical-consultation-history`, medicalConsultationHistoryRouter);
     app.use(`${PREFIX_API}/dashboard`, dashboardRouter);
     app.use(`${PREFIX_API}/notification`, notificationRouter);
+    app.use(`${PREFIX_API}/request-change-schedule`, requestChangeScheduleRouter);
 };
 
 export default routes;

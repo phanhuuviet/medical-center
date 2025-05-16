@@ -34,7 +34,7 @@ export const getClinicScheduleByClinicId = async (req, res) => {
 // [POST] ${PREFIX_API}/clinic-schedule
 export const createClinicSchedule = async (req, res) => {
     try {
-        const { clinicId, startTime, endTime } = req.body;
+        const { clinicId, startTime, endTime, isActive = true } = req.body;
 
         const { error } = clinicScheduleSchema.validate({ clinicId, startTime, endTime });
         const messageError = error?.details[0].message;
@@ -66,6 +66,7 @@ export const createClinicSchedule = async (req, res) => {
             clinicId,
             startTime,
             endTime,
+            isActive,
         });
 
         // Get all doctor belong to clinic and create record of DoctorWorkingSchedule table
