@@ -34,7 +34,7 @@ export const MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM = {
     DONE: 3, // HOÀN THÀNH
 };
 
-export const PAGE_SIZE = 10;
+export const PAGE_SIZE = 1000000;
 
 export const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
