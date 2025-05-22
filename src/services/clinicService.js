@@ -89,7 +89,7 @@ export const getDoctorByClinicId = async (req, res) => {
         }
 
         if (isNotInAnotherMedicalService) {
-            query.medicalServiceId = { $exists: false };
+            query.$or = [{ medicalServiceId: { $exists: false } }, { medicalServiceId: null }];
         }
 
         const checkClinic = await ClinicModel.findById(clinicId);
@@ -126,6 +126,8 @@ export const getDoctorByClinicId = async (req, res) => {
                 query._id = { $nin: busyDoctorIds };
             }
         }
+
+        console.log('query', query);
 
         const doctors = await DoctorModel.find(query);
 
