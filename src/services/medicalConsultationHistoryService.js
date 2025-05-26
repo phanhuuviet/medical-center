@@ -3,6 +3,7 @@ import { startOfDay } from 'date-fns';
 import ErrorMessage from '../constants/error-message.js';
 import { ACTIVE_STATUS, MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM, PAGE_SIZE } from '../constants/index.js';
 import { ResponseCode } from '../constants/response-code.js';
+import ClinicModel from '../models/ClinicModel.js';
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
 import LeaveScheduleModel from '../models/LeaveScheduleModel.js';
 import MedicalConsultationHistoryModel from '../models/MedicalConsultationHistoryModel.js';
@@ -165,6 +166,18 @@ export const createMedicalConsultationHistory = async (req, res) => {
             return new ResponseBuilder()
                 .withCode(ResponseCode.BAD_REQUEST)
                 .withMessage(error.details[0].message)
+                .build(res);
+        }
+
+        const checkClinic = await ClinicModel.findById(clinicId);
+        if (!checkClinic) {
+            return new ResponseBuilder().withCode(ResponseCode.NOT_FOUND).withMessage('Clinic not found').build(res);
+        }
+
+        if (checkClinic.status === ACTIVE_STATUS.INACTIVE) {
+            return new ResponseBuilder()
+                .withCode(ResponseCode.BAD_REQUEST)
+                .withMessage('Clinic is inactive')
                 .build(res);
         }
 
