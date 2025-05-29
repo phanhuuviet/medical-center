@@ -6,10 +6,22 @@ import ClinicModel from '../models/ClinicModel.js';
 import RequestChangeScheduleModel from '../models/RequestChangeScheduleModel.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
-// [GET] ${PREFIX_API}/request-change-schedule
+// [GET] ${PREFIX_API}/request-change-schedule?clinicId=:clinicId&applyDate=:applyDate
 export const getAllRequestChangeSchedule = async (req, res) => {
     try {
-        const requestChangeSchedule = await RequestChangeScheduleModel.find()
+        const { clinicId, applyDate } = req.query;
+        const query = {};
+
+        if (clinicId) {
+            query.clinicId = clinicId;
+        }
+
+        if (applyDate) {
+            const startOfApplyDate = startOfDay(new Date(applyDate));
+            query.applyDate = { $gte: startOfApplyDate };
+        }
+
+        const requestChangeSchedule = await RequestChangeScheduleModel.find(query)
             .populate('clinicId')
             .populate('newValue.clinicScheduleId');
 
