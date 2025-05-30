@@ -1,4 +1,4 @@
-import { endOfDay, startOfDay } from 'date-fns';
+import { endOfDay, isValid, startOfDay } from 'date-fns';
 import cron from 'node-cron';
 
 import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
@@ -8,8 +8,14 @@ export const startDailyCheckReqJob = async () => {
     // Cron chạy lúc 00:00 mỗi ngày
     cron.schedule('0 0 * * *', async () => {
         try {
-            const startCurrentDay = startOfDay(new Date());
-            const endCurrentDay = endOfDay(new Date());
+            const now = new Date();
+
+            if (!isValid(now)) {
+                throw new Error('Thời gian hiện tại không hợp lệ!');
+            }
+
+            const startCurrentDay = startOfDay(now);
+            const endCurrentDay = endOfDay(now);
 
             // Tìm bản ghi applyDate trong khoảng ngày hôm nay, và có clinicId (không null)
             const records = await RequestChangeScheduleModel.find({
