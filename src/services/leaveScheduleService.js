@@ -35,7 +35,7 @@ export const createLeaveSchedule = async (req, res) => {
     try {
         const { clinicScheduleId, doctorId, date, reason } = req.body;
 
-        const dateConvertedToString = getDateFromISOFormat(date);
+        const dateConvertedToString = getDateFromISOFormat(date || new Date());
 
         const { error } = leaveScheduleSchema.validate({ clinicScheduleId, doctorId, date: dateConvertedToString });
         const messageError = error?.details[0].message;
