@@ -4,7 +4,7 @@ import { ResponseCode } from '../constants/response-code.js';
 import { USER_ROLE } from '../constants/role.js';
 import LeaveScheduleModel from '../models/LeaveScheduleModel.js';
 import { leaveScheduleSchema } from '../schemas/leaveSchedule-schema.js';
-import { removeFieldsInArrayOfObject } from '../utils/index.js';
+import { getDateFromISOFormat, removeFieldsInArrayOfObject } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
 // [GET] ${PREFIX_API}/leave-schedule/:doctorId
@@ -35,14 +35,20 @@ export const createLeaveSchedule = async (req, res) => {
     try {
         const { clinicScheduleId, doctorId, date, reason } = req.body;
 
-        const { error } = leaveScheduleSchema.validate({ clinicScheduleId, doctorId, date });
+        const dateConvertedToString = getDateFromISOFormat(date);
+
+        const { error } = leaveScheduleSchema.validate({ clinicScheduleId, doctorId, date: dateConvertedToString });
         const messageError = error?.details[0].message;
 
         if (messageError) {
             return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
         }
 
-        const checkLeaveSchedule = await LeaveScheduleModel.findOne({ clinicScheduleId, doctorId, date });
+        const checkLeaveSchedule = await LeaveScheduleModel.findOne({
+            clinicScheduleId,
+            doctorId,
+            date: dateConvertedToString,
+        });
         if (checkLeaveSchedule) {
             return new ResponseBuilder()
                 .withCode(ResponseCode.BAD_REQUEST)
@@ -50,7 +56,12 @@ export const createLeaveSchedule = async (req, res) => {
                 .build(res);
         }
 
-        const newLeaveSchedule = await LeaveScheduleModel.create({ clinicScheduleId, doctorId, date, reason });
+        const newLeaveSchedule = await LeaveScheduleModel.create({
+            clinicScheduleId,
+            doctorId,
+            date: dateConvertedToString,
+            reason,
+        });
 
         return new ResponseBuilder()
             .withCode(ResponseCode.SUCCESS)
