@@ -147,3 +147,7 @@ export const calculateRevenueByKeyGroupByYear = (data, key, startYear, endYear) 
 
     return years;
 };
+
+export const convertToBoolean = (value) => {
+    return value === true || value === 'true' || value === 1 || value === '1';
+};

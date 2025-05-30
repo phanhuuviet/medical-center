@@ -7,14 +7,29 @@ import ClinicScheduleModel from '../models/ClinicScheduleModel.js';
 import DoctorWorkingScheduleModel from '../models/DoctorWorkingScheduleModel.js';
 import { DoctorModel } from '../models/UserModel.js';
 import { clinicScheduleSchema } from '../schemas/clinicSchedule-schema.js';
+import { convertToBoolean } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
 import * as doctorWorkingScheduleService from './doctorWorkingScheduleService.js';
 
-// [GET] ${PREFIX_API}/clinic-schedule/:clinicId
+// [GET] ${PREFIX_API}/clinic-schedule/:clinicId?disableIsActiveFilter=disableIsActiveFilter
 export const getClinicScheduleByClinicId = async (req, res) => {
     try {
         const clinicId = req.params.clinicId;
+        const { disableIsActiveFilter } = req.query;
+
+        if (disableIsActiveFilter) {
+            const clinicSchedules = await ClinicScheduleModel.find({ clinicId }).sort({ startTime: 1 }).setOptions({
+                disableIsActiveFilter: true,
+            });
+
+            return new ResponseBuilder()
+                .withCode(ResponseCode.SUCCESS)
+                .withMessage('Get clinic schedule success')
+                .withData(clinicSchedules)
+                .build(res);
+        }
+
         const clinicSchedules = await ClinicScheduleModel.find({ clinicId }).sort({ startTime: 1 });
 
         return new ResponseBuilder()
@@ -66,7 +81,7 @@ export const createClinicSchedule = async (req, res) => {
             clinicId,
             startTime,
             endTime,
-            isActive,
+            isActive: convertToBoolean(isActive), // Convert to boolean
         });
 
         // Get all doctor belong to clinic and create record of DoctorWorkingSchedule table
