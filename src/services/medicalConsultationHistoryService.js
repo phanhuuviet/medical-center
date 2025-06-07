@@ -189,6 +189,9 @@ export const createMedicalConsultationHistory = async (req, res) => {
                     clinicId,
                     examinationDate: examinationStartOfDay,
                     clinicScheduleId,
+                    status: {
+                        $ne: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED,
+                    },
                 }),
                 LeaveScheduleModel.findOne({
                     doctorId: responsibilityDoctorId,

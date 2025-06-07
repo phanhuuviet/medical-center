@@ -14,10 +14,40 @@ import { medicalServiceSchema } from '../schemas/medicalService-schema.js';
 import { getDateFromISOFormat, removeUndefinedFields } from '../utils/index.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
-// [GET] ${PREFIX_API}/medical-service?clinicId=clinicId&type=type&_page=_page&_pageSize=_pageSize
+// [GET] ${PREFIX_API}/medical-service?clinicId=clinicId&type=type&_page=_page&_pageSize=_pageSize&doctorId=doctorId
 export const getAllMedicalService = async (req, res) => {
     try {
-        const { clinicId, type, _page = 1, _pageSize = PAGE_SIZE } = req.query;
+        const { clinicId, doctorId, type, _page = 1, _pageSize = PAGE_SIZE } = req.query;
+
+        if (doctorId) {
+            const checkDoctor = await DoctorModel.findOne({
+                _id: doctorId,
+                role: USER_ROLE.DOCTOR,
+                medicalServiceId: { $ne: null },
+            });
+            if (!checkDoctor) {
+                return new ResponseBuilder()
+                    .withCode(ResponseCode.NOT_FOUND)
+                    .withMessage('Doctor is not found or does not have a medical service')
+                    .build(res);
+            }
+            const medicalServiceId = checkDoctor.medicalServiceId;
+            const medicalService = await MedicalServiceModel.findById(medicalServiceId);
+
+            if (!medicalService) {
+                return new ResponseBuilder()
+                    .withCode(ResponseCode.NOT_FOUND)
+                    .withMessage('Medical service is not found for this doctor')
+                    .build(res);
+            }
+
+            // If doctorId is provided, we only return the medical service of that doctor
+            return new ResponseBuilder()
+                .withCode(ResponseCode.SUCCESS)
+                .withMessage('Get medical service by doctor success')
+                .withData({ items: [medicalService], meta: { total: 1, page: 1 } })
+                .build(res);
+        }
 
         const query = {
             ...(clinicId && { clinicId }),

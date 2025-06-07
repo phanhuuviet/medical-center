@@ -293,7 +293,7 @@ export const getAllPatientsByDoctor = async (req, res) => {
             ...(userName && { userName: { $regex: userName, $options: 'i' } }),
             responsibilityDoctorId: doctorId,
             status: {
-                $in: [MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE, MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.PENDING],
+                $in: [MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE],
             },
         };
 
