@@ -224,6 +224,9 @@ export const createMedicalConsultationHistory = async (req, res) => {
                     clinicId,
                     clinicScheduleId,
                     examinationDate: examinationStartOfDay,
+                    status: {
+                        $ne: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED,
+                    },
                 }),
                 DoctorModel.countDocuments({ clinicId }),
                 LeaveScheduleModel.countDocuments({
@@ -248,6 +251,9 @@ export const createMedicalConsultationHistory = async (req, res) => {
             clinicId,
             examinationDate: examinationStartOfDay,
             clinicScheduleId,
+            status: {
+                $ne: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED,
+            },
         });
 
         if (existingHistory) {
@@ -263,6 +269,9 @@ export const createMedicalConsultationHistory = async (req, res) => {
                 patientId,
                 clinicId: { $ne: clinicId },
                 examinationDate: examinationStartOfDay,
+                status: {
+                    $ne: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED,
+                },
             }).populate('clinicSchedule'),
             ClinicScheduleModel.findById(clinicScheduleId),
         ]);
@@ -291,6 +300,9 @@ export const createMedicalConsultationHistory = async (req, res) => {
                     medicalServiceId,
                     examinationDate: examinationStartOfDay,
                     clinicScheduleId,
+                    status: {
+                        $ne: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED,
+                    },
                 }),
                 LeaveScheduleModel.find({
                     clinicId,
