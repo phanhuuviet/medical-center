@@ -351,6 +351,9 @@ export const getDoctorWorkingSchedules = async (req, res) => {
                     $gte: new Date(date).setHours(0, 0, 0, 0),
                     $lt: new Date(date).setHours(23, 59, 59),
                 },
+                status: {
+                    $ne: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED,
+                },
             }),
             LeaveScheduleModel.find({
                 doctorId,

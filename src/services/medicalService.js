@@ -183,10 +183,7 @@ export const getMedicalServiceSchedules = async (req, res) => {
                         $lt: endOfDay(new Date(date)),
                     },
                     status: {
-                        $in: [
-                            MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.PENDING,
-                            MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE,
-                        ],
+                        $ne: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED,
                     },
                     responsibilityDoctorId: doctorId,
                 }),
@@ -223,10 +220,7 @@ export const getMedicalServiceSchedules = async (req, res) => {
                 clinicScheduleId: { $in: clinicSchedules.map((s) => s._id) },
                 examinationDate: date,
                 status: {
-                    $in: [
-                        MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.PENDING,
-                        MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.DONE,
-                    ],
+                    $ne: MEDICAL_CONSULTATION_HISTORY_STATUS_ENUM.CANCELED,
                 },
             }),
         ]);
