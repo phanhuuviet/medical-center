@@ -1,0 +1,198 @@
+[
+    {
+        "id": "680799aef5ea38ef6fe46428",
+        "medicalServiceName": "Dịch vụ gói khám tổng quát",
+        "description": "Gói khám tổng quát là dịch vụ kiểm tra sức khỏe toàn diện, giúp phát hiện sớm các dấu hiệu bất thường, bệnh lý tiềm ẩn. Bao gồm khám lâm sàng, cận lâm sàng và xét nghiệm nhằm đánh giá toàn bộ các cơ quan và chức năng trong cơ thể như tim mạch, gan, thận, hệ tiêu hóa, nội tiết,…",
+        "symptom": "Mệt mỏi kéo dài không rõ nguyên nhân, Đau đầu, chóng mặt, Chán ăn, sút cân, Đau tức ngực, khó thở, Rối loạn tiêu hóa (đau bụng, tiêu chảy, táo bón), Người khỏe mạnh muốn kiểm tra định kỳ",
+        "relatedService": "Khám lâm sàng tổng quát, Xét nghiệm máu, xét nghiệm nước tiểu, Siêu âm bụng tổng quát, Điện tâm đồ (ECG), Đo huyết áp, chỉ số BMI, Chụp X-quang phổi, Tầm soát tiểu đường, mỡ máu, chức năng gan thận"
+    },
+    {
+        "id": "6807c8036def7e47b9e3cb1d",
+        "medicalServiceName": "Gói tầm soát ung thư sớm",
+        "description": "Gói khám tầm soát ung thư sớm giúp phát hiện các dấu hiệu ung thư tiềm ẩn ở giai đoạn đầu – khi bệnh chưa có triệu chứng rõ rệt. Áp dụng cho các loại ung thư phổ biến như gan, phổi, vú, cổ tử cung, đại trực tràng, dạ dày,…",
+        "symptom": "Có người thân trong gia đình từng bị ung thư, Giảm cân nhanh không rõ lý do, Mệt mỏi kéo dài, thiếu máu, Rối loạn tiêu hóa kéo dài, Xuất huyết bất thường (tiểu máu, đại tiện ra máu, rong kinh), Khối u bất thường, hạch nổi dưới da, Phù nề, khó thở, ho kéo dài",
+        "relatedService": "Nội soi dạ dày – đại tràng (nếu cần), Siêu âm ổ bụng, tuyến giáp, vú, Chụp X-quang ngực, CT, MRI (theo chỉ định), Pap smear, HPV test (đối với nữ), Khám chuyên khoa (ung bướu, tiêu hóa, phụ khoa, tiết niệu,…)"
+    },
+    {
+        "id": "6807c9726def7e47b9e3cd35",
+        "medicalServiceName": "Gói khám tim mạch chuyên sâu",
+        "description": "Gói khám tim mạch chuyên sâu tập trung đánh giá toàn diện về tình trạng hoạt động của tim và hệ tuần hoàn. Phát hiện sớm các bệnh lý như: tăng huyết áp, rối loạn nhịp tim, thiếu máu cơ tim, suy tim, bệnh van tim,...",
+        "symptom": "Đau tức ngực, hồi hộp, đánh trống ngực, Khó thở, mệt mỏi khi vận động, Phù chân, hoa mắt, chóng mặt, Huyết áp cao/thấp bất thường, Có tiền sử gia đình bị bệnh tim mạch, Người có yếu tố nguy cơ: hút thuốc, tiểu đường, mỡ máu cao",
+        "relatedService": "Điện tâm đồ (ECG), Siêu âm tim Doppler màu, Đo huyết áp, Holter huyết áp/nhịp tim, Xét nghiệm mỡ máu, đường huyết, men tim, Chụp X-quang tim phổi, Thăm khám chuyên khoa tim mạch"
+    },
+    {
+        "id": "680b4af30564b8a90b18c0cc",
+        "medicalServiceName": "Khám tai mũi họng",
+        "description": "Khám tai mũi họng là dịch vụ giúp phát hiện và điều trị các bệnh lý liên quan đến tai, mũi, họng như viêm xoang, viêm tai giữa, viêm amidan, viêm mũi dị ứng,…",
+        "symptom": "Nghẹt mũi, chảy mũi kéo dài, đau tai, ù tai, nghe kém, viêm họng, ho kéo dài, khàn tiếng, hôi miệng, khó nuốt",
+        "relatedService": "Nội soi tai mũi họng, xét nghiệm dịch mũi/họng, chụp X-quang xoang, đo thính lực, soi tai, test dị ứng hô hấp, khám chuyên khoa tai mũi họng"
+    },
+    {
+        "id": "680f474f0158fdd3760c42b3",
+        "medicalServiceName": "Gói kiểm tra tai mũi họng",
+        "description": "Gói kiểm tra tai mũi họng là gói khám toàn diện nhằm đánh giá chức năng và phát hiện sớm các bệnh lý liên quan đến hệ hô hấp trên và tai mũi họng.",
+        "symptom": "Nghẹt mũi, khó thở, đau họng, viêm họng tái phát, mất khứu giác, ù tai, chảy dịch tai, ho kéo dài, ngủ ngáy",
+        "relatedService": "Khám tai mũi họng tổng quát, nội soi tai mũi họng, đo thính lực, chụp X-quang xoang, xét nghiệm máu, test dị ứng, tư vấn điều trị chuyên khoa"
+    },
+    {
+        "id": "680f4dd80158fdd3760c435a",
+        "medicalServiceName": "Khám chuyên khoa tiêu hóa",
+        "description": "Dịch vụ khám tiêu hóa chuyên sâu nhằm chẩn đoán và điều trị các vấn đề về dạ dày, ruột, gan, mật, tụy, giúp phát hiện sớm các bệnh lý nguy hiểm như viêm loét dạ dày, trào ngược, viêm đại tràng,…",
+        "symptom": "Đau bụng, đầy hơi, chướng bụng, buồn nôn, tiêu chảy, táo bón, đi ngoài ra máu, ợ chua, chán ăn, sút cân không rõ lý do",
+        "relatedService": "Siêu âm ổ bụng, nội soi dạ dày – đại tràng, xét nghiệm máu, xét nghiệm phân, test HP (Helicobacter pylori), chụp X-quang hệ tiêu hóa, khám chuyên khoa tiêu hóa"
+    },
+    {
+        "id": "681248d03578fdf93a64a41a",
+        "medicalServiceName": "Gói khám định kì về mắt",
+        "description": "Gói khám định kỳ về mắt giúp đánh giá thị lực và phát hiện sớm các bệnh lý về mắt như cận thị, loạn thị, thoái hóa điểm vàng, đục thủy tinh thể, tăng nhãn áp,…",
+        "symptom": "Nhìn mờ, đau nhức mắt, khô mắt, mỏi mắt khi làm việc lâu, chảy nước mắt sống, chói mắt, nhìn đôi, mờ mắt khi đọc sách, có điểm đen trước mắt",
+        "relatedService": "Đo thị lực, soi đáy mắt, đo nhãn áp, chụp đáy mắt, khám khúc xạ, siêu âm mắt (nếu cần), khám chuyên khoa mắt"
+    },
+    {
+        "id": "681249263578fdf93a64a431",
+        "medicalServiceName": "Khoa cơ xương khớp",
+        "description": "Khám và điều trị các bệnh lý xương khớp như viêm khớp, thoái hóa, đau lưng, viêm gân.",
+        "symptom": "Khám và điều trị các bệnh lý xương khớp như viêm khớp, thoái hóa, đau lưng, viêm gân.",
+        "relatedService": "Siêu âm khớp, X‑quang, CT/MRI khớp, xét nghiệm viêm, đo mật độ xương, tư vấn tập phục hồi."
+    },
+    {
+        "id": "681b316cd239ea73d96e41ae",
+        "medicalServiceName": "Gói khám bệnh lý tuyến giáp",
+        "description": "Đánh giá chức năng tuyến giáp, phát hiện sớm cường giáp, suy giáp, bướu.",
+        "symptom": "Sụt/tăng cân, mệt mỏi, rối loạn nhịp tim, bướu cổ, run tay, ra mồ hôi.",
+        "relatedService": "Xét nghiệm TSH, FT4, FT3, siêu âm tuyến giáp, sinh thiết nếu cần, tư vấn nội tiết."
+    },
+    {
+        "id": "681b31d2d239ea73d96e41de",
+        "medicalServiceName": "Gói khám bệnh trĩ và hậu môn - trực tràng",
+        "description": "Chẩn đoán và điều trị bệnh trĩ, nứt kẽ hậu môn, polyp trực tràng",
+        "symptom": "Đau rát hậu môn, chảy máu khi đi cầu, sa búi trĩ, ngứa hậu môn, khó đại tiện.",
+        "relatedService": "Nội soi trực tràng – đại tràng, siêu âm hậu môn, xét nghiệm phân, tư vấn chuyên khoa tiêu hóa."
+    },
+    {
+        "id": "681c8b9a8c0e58b3475f2df2",
+        "medicalServiceName": "Khám chuyên khoa thần kinh",
+        "description": "Đánh giá tình trạng thần kinh trung ương, ngoại biên và thần kinh thực vật.",
+        "symptom": "Đau đầu, chóng mặt, yếu liệt, tê bì, co giật, mất cân bằng, rối loạn giấc ngủ.",
+        "relatedService": "CT/MRI sọ não, điện não đồ, điện cơ (EMG), đo dẫn truyền thần kinh, test nhận thức, tư vấn thần kinh."
+    },
+    {
+        "id": "681ebfe92923d8eb1c6e486e",
+        "medicalServiceName": "Gói khám tổng quát tim mạch",
+        "description": "Kiểm tra toàn diện sức khỏe tim mạch, phát hiện sớm bệnh tim mạch",
+        "symptom": "Đau ngực, khó thở, hồi hộp, phù chân, mệt khi gắng sức, tiền sử gia đình có bệnh tim mạch.",
+        "relatedService": "ECG, siêu âm tim Doppler, đo huyết áp, Holter, stress test, xét nghiệm mỡ máu, tư vấn nội tim mạch."
+    },
+    {
+        "id": "6820d4993d88166d7eaafb0d",
+        "medicalServiceName": "Khám nội soi tai mũi họng",
+        "description": "Đánh giá sâu tổn thương ở tai, hầu họng, thanh quản qua nội soi ống mềm.",
+        "symptom": "Ho kéo dài, khàn tiếng, đau họng, nghẹt mũi tái phát, ù tai, triệu chứng hô hấp trên.",
+        "relatedService": "Nội soi tai, mũi, họng, xét nghiệm dịch hầu họng, chụp CT/X‑quang xoang, đo thính lực, test dị ứng."
+    },
+    {
+        "id": "6820d4cb3d88166d7eaafb5d",
+        "medicalServiceName": "Gói khám kiểm tra tiêu hóa",
+        "description": "Gói khám chuyên sâu chức năng dạ dày‑ruột‑gan‑mật.",
+        "symptom": "Đau bụng, ợ nóng, buồn nôn, chướng bụng, đi ngoài bất thường.",
+        "relatedService": "Nội soi dạ dày‑đại tràng, siêu âm ổ bụng, xét nghiệm HP, phân, men gan, chụp X‑quang tiêu hóa, tư vấn chuyên khoa tiêu hóa."
+    },
+    {
+        "id": "6820d7e13d88166d7eaafd04",
+        "medicalServiceName": "Khám sản phụ khoa",
+        "description": "Kiểm tra sức khỏe nữ giới, phát hiện sớm bệnh phụ khoa và đánh giá sinh sản.",
+        "symptom": "Kinh nguyệt không đều, đau khi giao hợp, tiết dịch bất thường, đau vùng chậu.",
+        "relatedService": "Khám âm đạo, Pap smear, siêu âm đầu dò, xét nghiệm viêm nhiễm, test HPV, tư vấn sản‑phụ khoa."
+    },
+    {
+        "id": "6834aca92932943e34bf5d82",
+        "medicalServiceName": "Khám chuyên khoa tai mũi họng",
+        "description": "Khám và điều trị chuyên sâu các bệnh lý tai mũi họng.",
+        "symptom": "Viêm xoang, viêm họng tái phát, viêm tai giữa, khàn tiếng.",
+        "relatedService": "Nội soi TMMH, xét nghiệm dịch, chụp X‑quang xoang, đo thính lực, test dị ứng, MRI sọ mũi, tư vấn chuyên khoa."
+    },
+    {
+        "id": "6847ddb43954cf9b5259e0d3",
+        "medicalServiceName": "Gói khám viêm gan B",
+        "description": "Tầm soát và theo dõi người nhiễm HBV, phát hiện tổn thương gan.",
+        "symptom": "Mệt mỏi, vàng da, vàng mắt, đau hạ sườn phải, men gan tăng, tiền sử viêm gan B.",
+        "relatedService": "Xét nghiệm HBsAg, anti‑HBs, HBV‑DNA, men gan, siêu âm gan, FibroScan, tư vấn gan mật."
+    },
+    {
+        "id": "6847de1c3954cf9b5259e149",
+        "medicalServiceName": "Khám da liễu",
+        "description": "Đánh giá các bệnh lý về da, tóc, móng, sắc tố, dị ứng da.",
+        "symptom": "Ngứa da, nổi mụn, mẩn đỏ, tổn thương da, rụng tóc, thay đổi sắc tố.",
+        "relatedService": "Soi da, test dị ứng da, sinh thiết da, xét nghiệm máu, điều trị chuyên khoa, laser trị liệu."
+    },
+    {
+        "id": "6847de2a3954cf9b5259e172",
+        "medicalServiceName": "Khám xương khớp",
+        "description": "Tương tự khoa cơ xương khớp, dành cho các bệnh lý xương khớp chung.",
+        "symptom": "Đau khớp, sưng, cứng, giới hạn vận động, yếu/suy giảm chức năng vận động.",
+        "relatedService": "Siêu âm, X‑quang, MRI/CT khớp, xét nghiệm viêm, đo mật độ xương, vật lý trị liệu"
+    },
+    {
+        "id": "6847deac3954cf9b5259e1a4",
+        "medicalServiceName": "Khám chuyên khoa mắt chuyên sâu",
+        "description": "Khám sâu các bệnh lý về mắt như glôcôm, đục thủy tinh thể, thoái hóa điểm vàng.",
+        "symptom": "Mờ mắt, mất thị lực trung tâm, chói sáng, đau nhức mắt, thay đổi thị lực đột ngột.",
+        "relatedService": " Đo nhãn áp, soi đáy mắt, OCT, chụp thị trường, siêu âm mắt, xét nghiệm dịch kính, tư vấn chuyên khoa."
+    },
+    {
+        "id": "6847df393954cf9b5259e215",
+        "medicalServiceName": "Gói khám Sức khỏe tổng quát nữ",
+        "description": "Khám toàn diện thể chất và chức năng sinh sản dành cho nữ giới.",
+        "symptom": "Yêu cầu kiểm tra định kỳ sức khỏe, tiền sử bệnh lý, triệu chứng bất thường.",
+        "relatedService": " Toàn bộ khám tổng quát, xét nghiệm máu – nước tiểu, siêu âm ngực – bụng, Pap smear, test HPV, khám phụ khoa, đo mật độ xương."
+    },
+    {
+        "id": "6847df4b3954cf9b5259e23e",
+        "medicalServiceName": "Gói khám Sức khỏe tổng quát nam",
+        "description": "Khám tổng quát nội dung dành cho nam giới, bao gồm cả chức năng sinh dục.",
+        "symptom": "Kiểm tra định kỳ, rối loạn sinh lý, tiểu đường, huyết áp, tiền sử bệnh.",
+        "relatedService": "Khám tổng quát, xét nghiệm máu – nước tiểu, siêu âm bụng, xét nghiệm PSA, khám nam khoa, đo huyết áp, lipid, đường huyết"
+    },
+    {
+        "id": "6847df5d3954cf9b5259e267",
+        "medicalServiceName": "Gói khám Tầm soát ung thư",
+        "description": "",
+        "symptom": "",
+        "relatedService": ""
+    },
+    {
+        "id": "6847df6d3954cf9b5259e290",
+        "medicalServiceName": "Gói khám Tiểu đường – Nội tiết định kỳ",
+        "description": " Theo dõi và kiểm tra bệnh tiểu đường, các rối loạn nội tiết như tuyến giáp, thượng thận.",
+        "symptom": "Khát nhiều, tiểu nhiều, giảm cân, mệt, rối loạn nội tiết.",
+        "relatedService": "Xét nghiệm glucose/HbA1c, lipid, men gan, TSH, FT4, insulin, siêu âm tuyến giáp, tư vấn nội tiết."
+    },
+    {
+        "id": "6847df843954cf9b5259e2b9",
+        "medicalServiceName": "Khám chuyên khoa tim mạch",
+        "description": "Chẩn đoán và điều trị các bệnh lý liên quan đến tim và mạch máu như tăng huyết áp, bệnh mạch vành, suy tim, rối loạn nhịp tim.",
+        "symptom": "Đau ngực, hồi hộp, khó thở, mệt mỏi khi gắng sức, phù chân, tim đập nhanh hoặc chậm bất thường.",
+        "relatedService": " Điện tâm đồ (ECG), siêu âm tim, đo huyết áp, xét nghiệm mỡ máu, Holter nhịp tim, test gắng sức, tư vấn nội tim mạch."
+    },
+    {
+        "id": "6847df9d3954cf9b5259e2e2",
+        "medicalServiceName": "Khám chuyên khoa thần kinh",
+        "description": "Đánh giá và điều trị các bệnh lý liên quan đến hệ thần kinh trung ương và ngoại biên như đau đầu, động kinh, tai biến mạch máu não.",
+        "symptom": "Đau đầu, chóng mặt, tê bì tay chân, co giật, yếu liệt nửa người, rối loạn vận động, mất ngủ, rối loạn trí nhớ.",
+        "relatedService": "Chụp MRI/CT não, điện não đồ (EEG), điện cơ (EMG), đo dẫn truyền thần kinh, xét nghiệm dịch não tủy, tư vấn thần kinh."
+    },
+    {
+        "id": "6847dfb43954cf9b5259e30b",
+        "medicalServiceName": "Khám chuyên khoa nội tiết",
+        "description": "Chẩn đoán các bệnh nội tiết ngoài tiểu đường – tuyến giáp, tuyến thượng thận, tuyến yên.",
+        "symptom": "Rối loạn cân nặng, mệt, rối loạn kinh nguyệt, tăng huyết áp, da sạm, viêm lông.",
+        "relatedService": "Xét nghiệm hormone (TSH, cortisol, ACTH, insulin…), siêu âm tuyến giáp, test dung nạp glucose/hormone, tư vấn nội tiết."
+    },
+    {
+        "id": "6847dfca3954cf9b5259e334",
+        "medicalServiceName": "Khám chuyên khoa tiêu hóa",
+        "description": "Chẩn đoán và điều trị các bệnh lý về dạ dày, ruột, gan, tụy và đường mật",
+        "symptom": "Đau bụng, đầy hơi, ợ nóng, tiêu chảy, táo bón, buồn nôn, nôn, chán ăn, sụt cân không rõ nguyên nhân.",
+        "relatedService": "Nội soi dạ dày/đại tràng, siêu âm bụng tổng quát, xét nghiệm men gan, test HP, xét nghiệm phân, tư vấn tiêu hóa."
+    }
+]

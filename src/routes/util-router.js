@@ -5,7 +5,7 @@ import { uploadImageMiddleware } from '../middlewares/imageMiddleware.js';
 
 const router = express.Router();
 
-router.post('/test-api', utilController.testAPI);
+router.put('/test-api', utilController.testAPI);
 
 router.post('/upload-file', uploadImageMiddleware, utilController.uploadImage);
 

@@ -1,6 +1,8 @@
+import mongoose from 'mongoose';
+
 import ErrorMessage from '../constants/error-message.js';
 import { ResponseCode } from '../constants/response-code.js';
-import { signInSchema } from '../schemas/auth-schema.js';
+import MedicalServiceModel from '../models/MedicalServiceModel.js';
 import ResponseBuilder from '../utils/response-builder.js';
 
 // [POST] ${PREFIX_API}/util/upload-file
@@ -28,18 +30,30 @@ export const uploadImage = async (req, res) => {
 
 // [...] ${PREFIX_API}/util/test-api
 export const testAPI = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
-        const { email, password } = req.body;
+        const updateData = req.body;
 
-        const { error } = signInSchema.validate({ email, password });
-        console.log('error', error);
+        for (const item of updateData) {
+            const { id, description, symptom, relatedService } = item;
 
-        const messageError = error?.details[0].message;
-        if (messageError) {
-            return new ResponseBuilder().withCode(ResponseCode.BAD_REQUEST).withMessage(messageError).build(res);
+            await MedicalServiceModel.findByIdAndUpdate(
+                id,
+                {
+                    description,
+                    symptom,
+                    relatedService,
+                },
+                { session },
+            );
         }
 
-        return new ResponseBuilder().withCode(ResponseCode.SUCCESS).withMessage('Test API successfully').build(res);
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(200).json({ message: 'Cập nhật thành công tất cả dịch vụ y tế' });
     } catch (error) {
         console.log('Error', error);
         return new ResponseBuilder()

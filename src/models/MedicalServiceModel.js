@@ -12,6 +12,11 @@ const MedicalServiceSchema = new mongoose.Schema(
         type: { type: Number, required: true, default: MEDICAL_SERVICE_TYPE_ENUM.SPECIALITY },
         clinicId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Clinic' },
         logo: { type: String },
+
+        // Additional fields for medical service
+        description: { type: String },
+        symptom: { type: String },
+        relatedService: { type: String },
     },
     {
         timestamps: true,

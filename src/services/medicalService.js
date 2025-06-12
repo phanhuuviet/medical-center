@@ -259,7 +259,8 @@ export const getMedicalServiceSchedules = async (req, res) => {
 // [POST] ${PREFIX_API}/medical-service
 export const createMedicalService = async (req, res) => {
     try {
-        const { name, originalPrice, currentPrice, type, clinicId, doctorIds } = req.body;
+        const { name, originalPrice, currentPrice, type, clinicId, doctorIds, description, symptom, relatedService } =
+            req.body;
 
         const { error } = medicalServiceSchema.validate({ name, currentPrice, type, clinicId });
         const messageError = error?.details[0].message;
@@ -274,6 +275,9 @@ export const createMedicalService = async (req, res) => {
             currentPrice,
             type,
             clinicId,
+            description,
+            symptom,
+            relatedService,
         });
 
         await DoctorModel.updateMany(
@@ -304,7 +308,8 @@ export const createMedicalService = async (req, res) => {
 export const updateMedicalService = async (req, res) => {
     try {
         const medicalServiceId = req.params.id;
-        const { name, originalPrice, currentPrice, type, clinicId, doctorIds } = req.body;
+        const { name, originalPrice, currentPrice, type, clinicId, doctorIds, description, symptom, relatedService } =
+            req.body;
 
         // if (!checkFieldRequire(name, currentPrice, type, clinicId)) {
         //     return new ResponseBuilder()
@@ -328,6 +333,9 @@ export const updateMedicalService = async (req, res) => {
             currentPrice,
             type,
             clinicId,
+            description,
+            symptom,
+            relatedService,
             // doctorIds,
         };
 
